@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Chapter 10 Bridges to GIS software | Geocomputation with R</title>
+<meta name="author" content="Robin Lovelace, Jakub Nowosad, Jannes Muenchow">
+<meta name="description" content="Prerequisites This chapter requires QGIS, SAGA and GRASS GIS to be installed and the following packages to be attached: library(sf) library(terra) library(qgisprocess) library(Rsagacmd)...">
+<meta name="generator" content="bookdown 0.40 with bs4_book()">
+<meta property="og:title" content="Chapter 10 Bridges to GIS software | Geocomputation with R">
+<meta property="og:type" content="book">
+<meta property="og:url" content="https://r.geocompx.org/gis.html">
+<meta property="og:image" content="https://r.geocompx.org/images/cover2.png">
+<meta property="og:description" content="Prerequisites This chapter requires QGIS, SAGA and GRASS GIS to be installed and the following packages to be attached: library(sf) library(terra) library(qgisprocess) library(Rsagacmd)...">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Chapter 10 Bridges to GIS software | Geocomputation with R">
+<meta name="twitter:description" content="Prerequisites This chapter requires QGIS, SAGA and GRASS GIS to be installed and the following packages to be attached: library(sf) library(terra) library(qgisprocess) library(Rsagacmd)...">
+<meta name="twitter:image" content="https://r.geocompx.org/images/cover2.png">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><link href="libs/Lato-0.4.9/font.css" rel="stylesheet">
+<link href="libs/Roboto_Mono-0.4.9/font.css" rel="stylesheet">
+<link href="libs/Montserrat-0.4.9/font.css" rel="stylesheet">
+<script src="libs/bs3compat-0.8.0/transition.js"></script><script src="libs/bs3compat-0.8.0/tabs.js"></script><script src="libs/bs3compat-0.8.0/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><meta name="citation_title" content="Chapter 10 Bridges to GIS software | Geocomputation with R">
+<meta name="citation_author" content="Robin Lovelace">
+<meta name="citation_author" content="Jakub Nowosad">
+<meta name="citation_author" content="Jannes Muenchow">
+<meta name="citation_publication_date" content="2019">
+<meta name="citation_isbn" content="9780203730058">
+<link href="libs/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet">
+<script src="libs/htmlwidgets-1.6.4/htmlwidgets.js"></script><link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet">
+<script src="libs/leaflet-1.3.1/leaflet.js"></script><link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet">
+<script src="libs/proj4-2.6.2/proj4.min.js"></script><script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script><link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet">
+<script src="libs/leaflet-binding-2.2.2/leaflet.js"></script><script src="libs/kePrint-0.0.1/kePrint.js"></script><link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+<script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-99618359-1', 'auto');
+      ga('send', 'pageview');
+
+    </script><!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-VDC2S0ZNH5"></script><script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-VDC2S0ZNH5');
+    </script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- CSS --><link rel="stylesheet" href="style/style.css">
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h2>
+        <a href="index.html" title="">Geocomputation with R</a>
+      </h2>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html">Welcome</a></li>
+<li><a class="" href="foreword-1st-edition.html">Foreword (1st Edition)</a></li>
+<li><a class="" href="foreword-2nd-edition.html">Foreword (2nd Edition)</a></li>
+<li><a class="" href="preface.html">Preface</a></li>
+<li><a class="" href="intro.html"><span class="header-section-number">1</span> Introduction</a></li>
+<li class="book-part">Foundations</li>
+<li><a class="" href="spatial-class.html"><span class="header-section-number">2</span> Geographic data in R</a></li>
+<li><a class="" href="attr.html"><span class="header-section-number">3</span> Attribute data operations</a></li>
+<li><a class="" href="spatial-operations.html"><span class="header-section-number">4</span> Spatial data operations</a></li>
+<li><a class="" href="geometry-operations.html"><span class="header-section-number">5</span> Geometry operations</a></li>
+<li><a class="" href="raster-vector.html"><span class="header-section-number">6</span> Raster-vector interactions</a></li>
+<li><a class="" href="reproj-geo-data.html"><span class="header-section-number">7</span> Reprojecting geographic data</a></li>
+<li><a class="" href="read-write.html"><span class="header-section-number">8</span> Geographic data I/O</a></li>
+<li class="book-part">Extensions</li>
+<li><a class="" href="adv-map.html"><span class="header-section-number">9</span> Making maps with R</a></li>
+<li><a class="active" href="gis.html"><span class="header-section-number">10</span> Bridges to GIS software</a></li>
+<li><a class="" href="algorithms.html"><span class="header-section-number">11</span> Scripts, algorithms and functions</a></li>
+<li><a class="" href="spatial-cv.html"><span class="header-section-number">12</span> Statistical learning</a></li>
+<li class="book-part">Applications</li>
+<li><a class="" href="transport.html"><span class="header-section-number">13</span> Transportation</a></li>
+<li><a class="" href="location.html"><span class="header-section-number">14</span> Geomarketing</a></li>
+<li><a class="" href="eco.html"><span class="header-section-number">15</span> Ecology</a></li>
+<li><a class="" href="conclusion.html"><span class="header-section-number">16</span> Conclusion</a></li>
+<li><a class="" href="references.html">References</a></li>
+</ul>
+
+        <div class="book-extra">
+          <p><a id="book-repo" href="https://github.com/geocompx/geocompr">View book source <i class="fab fa-github"></i></a></p>
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="gis" class="section level1" number="10">
+<h1>
+<span class="header-section-number">10</span> Bridges to GIS software<a class="anchor" aria-label="anchor" href="#gis"><i class="fas fa-link"></i></a>
+</h1>
+<div id="prerequisites-8" class="section level2 unnumbered">
+<h2>Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites-8"><i class="fas fa-link"></i></a>
+</h2>
+<ul>
+<li>This chapter requires QGIS, SAGA and GRASS GIS to be installed and the following packages to be attached:</li>
+</ul>
+<div class="sourceCode" id="cb346"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/">terra</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/qgisprocess/">qgisprocess</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://stevenpawley.github.io/Rsagacmd/">Rsagacmd</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rsbivand.github.io/rgrass/">rgrass</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://brazil-data-cube.github.io/rstac/">rstac</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/appelmar/gdalcubes">gdalcubes</a></span><span class="op">)</span></span></code></pre></div>
+</div>
+<div id="introduction-6" class="section level2" number="10.1">
+<h2>
+<span class="header-section-number">10.1</span> Introduction<a class="anchor" aria-label="anchor" href="#introduction-6"><i class="fas fa-link"></i></a>
+</h2>
+<p>A defining feature of <a href="https://en.wikipedia.org/wiki/Interpreter_(computing)">interpreted</a> languages with an interactive console — technically a read-eval-print loop (REPL) — such as R is the way you interact with them:
+rather than relying on pointing and clicking on different parts of a screen, you type commands into the console and execute them with the <code>Enter</code> key.
+A common and effective workflow when using interactive development environments such as RStudio or VS Code is to type code into source files in a source editor and control interactive execution of the code with a shortcut such as <code>Ctrl+Enter</code>.</p>
+<p>Command line interfaces (CLIs) are not unique to R: most early computing environments relied on a command line ‘shell’ and it was only after the invention and widespread adoption of the computer mouse in the 1990s that graphical user interfaces (GUIs) became common.
+GRASS GIS, the longest-standing continuously developed open source GIS software, for example, relied on its CLI before it gained a GUI <span class="citation">(<a href="references.html#ref-landa_new_2008">Landa 2008</a>)</span>.
+Most popular GIS software projects are GUI-driven.
+You <em>can</em> interact with QGIS, SAGA, GRASS GIS and gvSIG from system terminals and embedded CLIs, but their design encourages most people to interact with them by ‘pointing and clicking’.
+An unintended consequence of this is that most GIS users miss out on the advantages of CLI-driven and scriptable approaches.
+According to the creator of the popular QGIS software <span class="citation">(<a href="references.html#ref-sherman_desktop_2008">Sherman 2008</a>)</span>:</p>
+<blockquote>
+<p>With the advent of ‘modern’ GIS software, most people want to point and click their way through life. That’s good, but there is a tremendous amount of flexibility and power waiting for you with the command line. Many times you can do something on the command line in a fraction of the time you can do it with a GUI.</p>
+</blockquote>
+<p>The ‘CLI vs. GUI’ debate does not have to be adversarial: both ways of working have advantages, depending on a range of factors including the task (with drawing new features being well suited to GUIs), the level of reproducibility desired, and the user’s skillset.
+GRASS GIS is a good example of GIS software that is primarily based on a CLI but which also has a prominent GUI.
+Likewise, while R is focused on its CLI, IDEs such as RStudio provide a GUI for improving accessibility.
+Software cannot be neatly categorized into CLI or GUI-based.
+However, interactive command-line interfaces have several important advantages in terms of:</p>
+<ul>
+<li>Automating repetitive tasks</li>
+<li>Enabling transparency and reproducibility</li>
+<li>Encouraging software development by providing tools to modify existing functions and implement new ones</li>
+<li>Developing future-proof and efficient programming skills which are in high demand</li>
+<li>Improving touch typing, a key skill in the digital age</li>
+</ul>
+<p>On the other hand, good GUIs also have advantages, including:</p>
+<ul>
+<li>‘Shallow’ learning curves meaning geographic data can be explored and visualized without hours of learning a new language</li>
+<li>Support for ‘digitizing’ (creating new vector datasets), including trace, snap and topological tools<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;The &lt;strong&gt;mapedit&lt;/strong&gt; R package allows the quick editing of a few spatial features in a browser window opened from R but not professional, large-scale cartographic digitizing.&lt;/p&gt;"><sup>57</sup></a>
+</li>
+<li>Enables georeferencing (matching raster images to existing maps) with ground control points and orthorectification</li>
+<li>Supports stereoscopic mapping (e.g., LiDAR and structure from motion)</li>
+</ul>
+<p>Another advantage of dedicated GIS software projects is that they provide access to hundreds of ‘geoalgorithms’ via ‘GIS bridges’ <span class="citation">(<a href="references.html#ref-neteler_open_2008">Neteler and Mitasova 2008</a>)</span>.
+Such bridges to these computational recipes for enhancing R’s capabilities for solving geographic data problems are the topic of this chapter.</p>
+
+<div class="rmdnote">
+A command line interface is an environment for interacting with computer programs by typing and entering successive commands (command lines).
+<code>bash</code> in Linux and <code>PowerShell</code> in Windows are well-known examples that allow the user to control almost any part of their operating system.
+IDEs such as RStudio and VS Code provide code auto-completion and other features to improve the user experience when developing code.
+</div>
+<p>R is a natural choice for people wanting to build bridges between reproducible data analysis workflows and GIS because it <em>originated</em> as an interface language.
+A key feature of R (and its predecessor S) is that it provides access to statistical algorithms in other languages (particularly FORTRAN and C), but from a powerful high-level functional language with an intuitive REPL environment, which C and FORTRAN lacked <span class="citation">(<a href="references.html#ref-chambers_extending_2016">Chambers 2016</a>)</span>.
+R continues this tradition with interfaces to numerous languages, notably C++.</p>
+<p>Although R was not designed as a command line GIS, its ability to interface with dedicated GISs gives it astonishing geospatial capabilities.
+With GIS bridges, R can replicate more diverse workflows, with the additional reproducibility, scalability and productivity benefits of controlling them from a programming environment and a consistent CLI.
+Furthermore, R outperforms GISs in some areas of geocomputation, including interactive/animated map-making (see Chapter <a href="adv-map.html#adv-map">9</a>) and spatial statistical modeling (see Chapter <a href="spatial-cv.html#spatial-cv">12</a>).</p>
+<p>This chapter focuses on ‘bridges’ to three mature open source GIS products, summarized in Table <a href="gis.html#tab:gis-comp">10.1</a>:</p>
+<ul>
+<li>QGIS, via the package <strong>qgisprocess</strong> [<span class="citation">Dunnington et al. (<a href="references.html#ref-R-qgisprocess">2024</a>)</span>; Section <a href="gis.html#rqgis">10.2</a>]</li>
+<li>SAGA, via <strong>Rsagacmd</strong> [<span class="citation">Pawley (<a href="references.html#ref-R-Rsagacmd">2023</a>)</span>; Section <a href="gis.html#saga">10.3</a>]</li>
+<li>GRASS GIS, via <strong>rgrass</strong> [<span class="citation">Bivand (<a href="references.html#ref-R-rgrass">2023</a>)</span>; Section <a href="gis.html#grass">10.4</a>]</li>
+</ul>
+<p>There have also been major developments in enabling open source GIS software to write and execute R scripts inside QGIS (see <a href="https://docs.qgis.org/3.28/en/docs/training_manual/processing/r_intro.html">docs.qgis.org</a>) and GRASS GIS (see <a href="https://grasswiki.osgeo.org/wiki/R_statistics/rgrass#R_within_GRASS">grasswiki.osgeo.org</a>).</p>
+<div class="inline-table"><table class="table table-sm">
+<caption>
+<span id="tab:gis-comp">TABLE 10.1: </span>Comparison between three open-source GIS. Hybrid refers to the support of vector and raster operations.</caption>
+<thead><tr class="header">
+<th align="left">GIS</th>
+<th align="left">First Release</th>
+<th align="left">No. Functions</th>
+<th align="left">Support</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">QGIS</td>
+<td align="left">2002</td>
+<td align="left">&gt;1000</td>
+<td align="left">hybrid</td>
+</tr>
+<tr class="even">
+<td align="left">SAGA</td>
+<td align="left">2004</td>
+<td align="left">&gt;600</td>
+<td align="left">hybrid</td>
+</tr>
+<tr class="odd">
+<td align="left">GRASS GIS</td>
+<td align="left">1982</td>
+<td align="left">&gt;500</td>
+<td align="left">hybrid</td>
+</tr>
+</tbody>
+</table></div>
+<p>In addition to the three R-GIS bridges mentioned above, this chapter also provides a brief introduction to R interfaces to spatial libraries (Section <a href="gis.html#gdal">10.6</a>), spatial databases (Section <a href="gis.html#postgis">10.7</a>), and cloud-based processing of Earth observation data (Section <a href="gis.html#cloud">10.8</a>).</p>
+</div>
+<div id="rqgis" class="section level2" number="10.2">
+<h2>
+<span class="header-section-number">10.2</span> <strong>qgisprocess</strong>: a bridge to QGIS and beyond<a class="anchor" aria-label="anchor" href="#rqgis"><i class="fas fa-link"></i></a>
+</h2>
+<p>QGIS is the most popular open-source GIS (Table <a href="gis.html#tab:gis-comp">10.1</a>; <span class="citation">Graser and Olaya (<a href="references.html#ref-graser_processing_2015">2015</a>)</span>).
+QGIS provides a unified interface to QGIS’s native geoalgorithms, GDAL, and — when they are installed — from other <em>providers</em> such as GRASS GIS, and SAGA <span class="citation">(<a href="references.html#ref-graser_processing_2015">Graser and Olaya 2015</a>)</span>.
+Since version 3.14 (released in summer 2020), QGIS ships with the <code>qgis_process</code> command-line utility for accessing a bounty of functionality for geocomputation.
+<code>qgis_process</code> provides access to 300+ geoalgorithms in the standard QGIS installation and 1,000+ via plugins to external providers such as GRASS GIS and SAGA.</p>
+<p>The <strong>qgisprocess</strong> package provides access to <code>qgis_process</code> from R.
+The package requires QGIS — and any other relevant plugins such as GRASS GIS and SAGA, used in this chapter — to be installed and available to the system.
+For installation instructions, see <strong>qgisprocess</strong>’s <a href="https://r-spatial.github.io/qgisprocess/">documentation</a>.</p>
+
+<div class="rmdnote">
+<p>A quick way to get up-and-running with <strong>qgisprocess</strong> if you have Docker installed is via the <code>qgis</code> image developed as part of this project.
+Assuming you have Docker installed and sufficient computational resources, you can run an R session with <strong>qgisprocess</strong> and relevant plugins with the following command (see the <a href="https://github.com/geocompx/docker">geocompx/docker</a> repository for details):</p>
+<p><code>docker run -e DISABLE_AUTH=true -p 8786:8787 ghcr.io/geocompx/docker:qgis</code></p>
+</div>
+<div class="sourceCode" id="cb347"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/qgisprocess/">qgisprocess</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Attempting to load the cache ... Success!</span></span>
+<span><span class="co">#&gt; QGIS version: 3.30.3-'s-Hertogenbosch</span></span>
+<span><span class="co">#&gt; ...</span></span></code></pre></div>
+<p>This package automatically tries to detect a QGIS installation and complains if it cannot find it.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;You can see details of the detection process with &lt;code&gt;qgis_configure()&lt;/code&gt;.&lt;/p&gt;"><sup>58</sup></a>
+There are a few possible solutions when the configuration fails: you can set <code>options(qgisprocess.path = "path/to/your_qgis_process")</code>, or set up the <code>R_QGISPROCESS_PATH</code> environment variable.
+The above approaches can also be used when you have more than one QGIS installation and want to decide which one to use.
+For more details, please refer to the <strong>qgisprocess</strong> <a href="https://r-spatial.github.io/qgisprocess/articles/qgisprocess.html">‘getting started’ vignette</a>.
+Next, we can find which plugins (meaning different software) are available on our computer:</p>
+<div class="sourceCode" id="cb348"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_algorithms.html">qgis_plugins</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 2</span></span>
+<span><span class="co">#&gt;   name                    enabled</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;                   &lt;lgl&gt;</span></span>
+<span><span class="co">#&gt; 1 grassprovider           FALSE</span></span>
+<span><span class="co">#&gt; 2 otbprovider             FALSE</span></span>
+<span><span class="co">#&gt; 3 processing              TRUE</span></span>
+<span><span class="co">#&gt; 4 processing_saga_nextgen FALSE</span></span></code></pre></div>
+<p>This tells us that the GRASS GIS (<code>grassprovider</code>) and SAGA (<code>processing_saga_nextgen</code>) plugins are available on the system but are not yet enabled.
+Since we need both later on in the chapter, let’s enable them.</p>
+<div class="sourceCode" id="cb349"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_enable_plugins.html">qgis_enable_plugins</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"grassprovider"</span>, <span class="st">"processing_saga_nextgen"</span><span class="op">)</span>, </span>
+<span>                    quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>Please note that aside from installing SAGA on your system, you also need to install the QGIS Python plugin Processing Saga NextGen.
+You can do so from within QGIS with the <a href="https://docs.qgis.org/latest/en/docs/training_manual/qgis_plugins/fetching_plugins.html">Plugin Manager</a> or programmatically with the help of the Python package <a href="https://github.com/3liz/qgis-plugin-manager">qgis-plugin-manager</a> (at least on Linux).</p>
+<p><code><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_algorithms.html">qgis_providers()</a></code> lists the name of the software and the corresponding count of available geoalgorithms.</p>
+<div class="sourceCode" id="cb350"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_algorithms.html">qgis_providers</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 7 × 3</span></span>
+<span><span class="co">#&gt;   provider provider_title    algorithm_count</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;    &lt;chr&gt;                       &lt;int&gt;</span></span>
+<span><span class="co">#&gt; 1 gdal     GDAL                           56</span></span>
+<span><span class="co">#&gt; 2 grass    GRASS                         306</span></span>
+<span><span class="co">#&gt; 3 qgis     QGIS                           50</span></span>
+<span><span class="co">#&gt; 4 3d       QGIS (3D)                       1</span></span>
+<span><span class="co">#&gt; 5 native   QGIS (native c++)             243</span></span>
+<span><span class="co">#&gt; 6 pdal     QGIS (PDAL)                    17</span></span>
+<span><span class="co">#&gt; 7 sagang   SAGA Next Gen                 509</span></span></code></pre></div>
+<p>The output table affirms that we can use QGIS geoalgorithms (<code>native</code>, <code>qgis</code>, <code>3d</code>, <code>pdal</code>) and external ones from the third-party providers GDAL, SAGA and GRASS GIS through the QGIS interface.</p>
+<p>Now, we are ready for some geocomputation with QGIS and friends, from within R!
+Let’s try two example case studies.
+The first one shows how to unite two polygonal datasets with different borders (Section <a href="gis.html#qgis-vector">10.2.1</a>).
+The second one focuses on deriving new information from a digital elevation model represented as a raster (Section <a href="gis.html#qgis-raster">10.2.2</a>).</p>
+<div id="qgis-vector" class="section level3" number="10.2.1">
+<h3>
+<span class="header-section-number">10.2.1</span> Vector data<a class="anchor" aria-label="anchor" href="#qgis-vector"><i class="fas fa-link"></i></a>
+</h3>
+<p>Consider a situation when you have two polygon objects with different spatial units (e.g., regions, administrative units).
+Our goal is to merge these two objects into one, containing all of the boundary lines and related attributes.
+We use again the incongruent polygons we have already encountered in Section <a href="spatial-operations.html#incongruent">4.2.8</a> (Figure <a href="gis.html#fig:uniondata">10.1</a>).
+Both polygon datasets are available in the <strong>spData</strong> package, and for both we would like to use a geographic CRS (see also Chapter <a href="reproj-geo-data.html#reproj-geo-data">7</a>).</p>
+<div class="sourceCode" id="cb351"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"incongruent"</span>, <span class="st">"aggregating_zones"</span>, package <span class="op">=</span> <span class="st">"spData"</span><span class="op">)</span></span>
+<span><span class="va">incongr_wgs</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="va">incongruent</span>, <span class="st">"EPSG:4326"</span><span class="op">)</span></span>
+<span><span class="va">aggzone_wgs</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="va">aggregating_zones</span>, <span class="st">"EPSG:4326"</span><span class="op">)</span></span></code></pre></div>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:uniondata"></span>
+<img src="figures/uniondata-1.png" alt="Two areal units: incongruent (black lines) and aggregating zones (red borders)." width="100%"><p class="caption">
+FIGURE 10.1: Two areal units: incongruent (black lines) and aggregating zones (red borders).
+</p>
+</div>
+<p>The first step is to find an algorithm that can merge two vector objects.
+To list all of the available algorithms, we can use the <code><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_algorithms.html">qgis_algorithms()</a></code> function.
+This function returns a data frame containing all of the available providers and the algorithms they contain.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;Therefore, if you cannot see an expected provider, it is probably because you still need to install some external GIS software.&lt;/p&gt;"><sup>59</sup></a></p>
+<div class="sourceCode" id="cb352"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># output not shown</span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_algorithms.html">qgis_algorithms</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>To find an algorithm, we can use the <code><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_search_algorithms.html">qgis_search_algorithms()</a></code> function.
+Assuming that the short description of the function contains the word “union”, we can run the following code to find the algorithm of interest:</p>
+<div class="sourceCode" id="cb353"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_search_algorithms.html">qgis_search_algorithms</a></span><span class="op">(</span><span class="st">"union"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 2 × 5</span></span>
+<span><span class="co">#&gt;   provider provider_title    group          algorithm         algorithm_title </span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;    &lt;chr&gt;             &lt;chr&gt;          &lt;chr&gt;             &lt;chr&gt;           </span></span>
+<span><span class="co">#&gt; 1 native   QGIS (native c++) Vector overlay native:multiunion Union (multiple)</span></span>
+<span><span class="co">#&gt; 2 native   QGIS (native c++) Vector overlay native:union      Union  </span></span></code></pre></div>
+<p>One of the algorithms on the above list, <code>"native:union"</code>, sounds promising.
+The next step is to find out what this algorithm does and how we can use it.
+This is the role of the <code><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_show_help.html">qgis_show_help()</a></code>, which returns a short summary of what the algorithm does, its arguments, and outputs.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;We can also extract some of information independently with &lt;code&gt;qgis_get_description()&lt;/code&gt;, &lt;code&gt;qgis_get_argument_specs()&lt;/code&gt;, and &lt;code&gt;qgis_get_output_specss()&lt;/code&gt;.&lt;/p&gt;"><sup>60</sup></a>
+This makes its output rather long.
+The following command returns a data frame with each row representing an argument required by <code>"native:union"</code> and columns with the name, description, type, default value, available values, and acceptable values associated with each:</p>
+<div class="sourceCode" id="cb354"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">alg</span> <span class="op">=</span> <span class="st">"native:union"</span></span>
+<span><span class="va">union_arguments</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_show_help.html">qgis_get_argument_specs</a></span><span class="op">(</span><span class="va">alg</span><span class="op">)</span></span>
+<span><span class="va">union_arguments</span></span>
+<span><span class="co">#&gt; # A tibble: 5 × 6</span></span>
+<span><span class="co">#&gt;   name    description qgis_type default_value available_values acceptable_...</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;   &lt;chr&gt;       &lt;chr&gt;     &lt;list&gt;        &lt;list&gt;           &lt;list&gt;           </span></span>
+<span><span class="co">#&gt; 1 INPUT   Input layer source    &lt;NULL&gt;        &lt;NULL&gt;           &lt;chr [1]&gt;        </span></span>
+<span><span class="co">#&gt; 2 OVERLAY Overlay la… source    &lt;NULL&gt;        &lt;NULL&gt;           &lt;chr [1]&gt;        </span></span>
+<span><span class="co">#&gt; 3 OVERLA… Overlay fi… string    &lt;NULL&gt;        &lt;NULL&gt;           &lt;chr [3]&gt;        </span></span>
+<span><span class="co">#&gt; 4 OUTPUT  Union       sink      &lt;NULL&gt;        &lt;NULL&gt;           &lt;chr [1]&gt;        </span></span>
+<span><span class="co">#&gt; 5 GRID_S… Grid size   number    &lt;NULL&gt;        &lt;NULL&gt;           &lt;chr [3]&gt;  </span></span>
+<span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; [1] "A numeric value"                                                                                 </span></span>
+<span><span class="co">#&gt; [2] "field:FIELD_NAME to use a data defined value taken from the FIELD_NAME</span></span>
+<span><span class="co">#&gt;      field"                    </span></span>
+<span><span class="co">#&gt; [3] "expression:SOME EXPRESSION to use a data defined value calculated using</span></span>
+<span><span class="co">#&gt;      a custom QGIS expression"</span></span></code></pre></div>
+<p>The arguments, contained in <code>union_arguments$name</code>, are <code>INPUT</code>, <code>OVERLAY</code>, <code>OVERLAY_FIELDS_PREFIX</code>, and <code>OUTPUT</code>.
+<code>union_arguments$acceptable_values</code> contains a list with the possible input values for each argument.
+Many functions require inputs representing paths to a vector layer; <strong>qgisprocess</strong> functions accept <code>sf</code> objects for such arguments.
+Objects from the <strong>terra</strong> and <strong>stars</strong> package can be used when a “path to a raster layer” is expected.
+This can be very convenient, but we recommend providing the path to your spatial data on disk when you only read it in to submit it to a <strong>qgisprocess</strong> algorithm: the first thing <strong>qgisprocess</strong> does when executing a geoalgorithm is to export the spatial data living in your R session back to disk in a format known to QGIS such as .gpkg or .tif files.
+This can increase algorithm runtimes.</p>
+<p>The main function of <strong>qgisprocess</strong> is <code><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_run_algorithm.html">qgis_run_algorithm()</a></code>, which sends inputs to QGIS and returns the outputs.
+It accepts the algorithm name and a set of named arguments shown in the help list, and it performs expected calculations.
+In our case, three arguments seem important: <code>INPUT</code>, <code>OVERLAY</code>, and <code>OUTPUT</code>.
+The first one, <code>INPUT</code>, is our main vector object <code>incongr_wgs</code>, while the second one, <code>OVERLAY</code>, is <code>aggzone_wgs</code>.
+The last argument, <code>OUTPUT</code>, is an output file name, which <strong>qgisprocess</strong> will automatically choose and create in <code><a href="https://rdrr.io/r/base/tempfile.html">tempdir()</a></code> if none is provided.</p>
+<div class="sourceCode" id="cb355"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">union</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_run_algorithm.html">qgis_run_algorithm</a></span><span class="op">(</span><span class="va">alg</span>,</span>
+<span>  INPUT <span class="op">=</span> <span class="va">incongr_wgs</span>, OVERLAY <span class="op">=</span> <span class="va">aggzone_wgs</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">union</span></span>
+<span><span class="co">#&gt;  $ OUTPUT: 'qgis_outputVector' chr "/tmp/...gpkg"</span></span></code></pre></div>
+<p>Running the above line of code will save our two input objects into temporary .gpkg files, run the selected algorithm on them, and return a temporary .gpkg file as the output.
+The <strong>qgisprocess</strong> package stores the <code><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_run_algorithm.html">qgis_run_algorithm()</a></code> result as a list containing, in this case, a path to the output file.
+We can either read this file back into R with <code><a href="https://r-spatial.github.io/sf/reference/st_read.html">read_sf()</a></code> (e.g., <code>union_sf = read_sf(union[[1]])</code>) or directly with <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf()</a></code>:</p>
+<div class="sourceCode" id="cb356"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">union_sf</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">union</span><span class="op">)</span></span></code></pre></div>
+<p>Note that the QGIS union operation merges the two input layers into one layer by using the intersection and the symmetrical difference of the two input layers (which, by the way, is also the default when doing a union operation in GRASS GIS and SAGA).
+This is <strong>not</strong> the same as <code>st_union(incongr_wgs, aggzone_wgs)</code> (see the Exercises)!</p>
+<p>The result, <code>union_sf</code>, is a multipolygon with a larger number of features than two input objects.
+Notice, however, that many of these polygons are small and do not represent real areas but are rather a result of our two datasets having a different level of detail.
+These artifacts of error are called sliver polygons (see red-colored polygons in the left panel of Figure <a href="gis.html#fig:sliver">10.2</a>).
+One way to identify slivers is to find polygons with comparatively very small areas, here, e.g., 25000 m<sup>2</sup>, and next remove them.
+Let’s search for an appropriate algorithm.</p>
+<div class="sourceCode" id="cb357"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_search_algorithms.html">qgis_search_algorithms</a></span><span class="op">(</span><span class="st">"clean"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 1 × 5</span></span>
+<span><span class="co">#&gt;   provider provider_title group        algorithm      algorithm_title</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;    &lt;chr&gt;          &lt;chr&gt;        &lt;chr&gt;          &lt;chr&gt;</span></span>
+<span><span class="co">#&gt; 1 grass   GRASS           Vector (v.*) grass:v.clean v.clean</span></span></code></pre></div>
+<p>This time the found algorithm, <code>v.clean</code>, is not included in QGIS, but GRASS GIS.
+GRASS GIS’s <code>v.clean</code> is a powerful tool for cleaning topology of spatial vector data.
+Importantly, we can use it through <strong>qgisprocess</strong>.</p>
+
+<div class="rmdnote">
+The GRASS GIS provider in QGIS was called <code>grass7</code> until QGIS version 3.34.
+Thus, if you have an older QGIS version, you must prefix the algorithms with <code>grass7</code> instead of <code>grass</code>.
+</div>
+<p>Similar to the previous step, we should start by looking at this algorithm’s help.</p>
+<div class="sourceCode" id="cb358"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_show_help.html">qgis_show_help</a></span><span class="op">(</span><span class="st">"grass:v.clean"</span><span class="op">)</span></span></code></pre></div>
+<p>We have omitted the output here, because the help text is quite long and contains a lot of arguments.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;Also note that these arguments, contrary to the QGIS’s ones, are in lowercase.&lt;/p&gt;"><sup>61</sup></a>
+This is because <code>v.clean</code> is a multi-tool – it can clean different types of geometries and solve different types of topological problems.
+For this example, let’s focus on just a few arguments, however, we encourage you to visit this <a href="https://grass.osgeo.org/grass-stable/manuals/v.clean.html">algorithm’s documentation</a> to learn more about <code>v.clean</code> capabilities.</p>
+<div class="sourceCode" id="cb359"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_show_help.html">qgis_get_argument_specs</a></span><span class="op">(</span><span class="st">"grass:v.clean"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">description</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 2</span></span>
+<span><span class="co">#&gt;   name      description</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;     &lt;chr&gt;</span></span>
+<span><span class="co">#&gt; 1 input     Layer to clean</span></span>
+<span><span class="co">#&gt; 2 type      Input feature type</span></span>
+<span><span class="co">#&gt; 3 tool      Cleaning tool</span></span>
+<span><span class="co">#&gt; 4 threshold Threshold (comma separated for each tool)</span></span></code></pre></div>
+<p>The main argument for this algorithm is <code>input</code> – our vector object.
+Next, we need to select a tool – a cleaning method. <a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;It is also possible to select several tools, which will then be executed sequentially.&lt;/p&gt;"><sup>62</sup></a>
+About a dozen tools exist in <code>v.clean</code> allowing to remove duplicate geometries, remove small angles between lines, or remove small areas, among others.
+In this case, we are interested in the latter tool, <code>rmarea</code>.
+Several of the tools, <code>rmarea</code> included, expect an additional argument <code>threshold</code>, whose behavior depends on the selected tool.
+In our case, the <code>rmarea</code> tool removes all areas smaller or equal to a provided <code>threshold</code>.
+Note that the threshold must be specified in square meters regardless of the coordinate reference system of the input layer.</p>
+<p>Let’s run this algorithm and convert its output into a new <code>sf</code> object <code>clean_sf</code>.</p>
+<div class="sourceCode" id="cb360"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">clean</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_run_algorithm.html">qgis_run_algorithm</a></span><span class="op">(</span><span class="st">"grass:v.clean"</span>,</span>
+<span>  input <span class="op">=</span> <span class="va">union_sf</span>, </span>
+<span>  tool <span class="op">=</span> <span class="st">"rmarea"</span>, threshold <span class="op">=</span> <span class="fl">25000</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">clean_sf</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">clean</span><span class="op">)</span></span></code></pre></div>
+<p>The result, the right panel of Figure <a href="gis.html#fig:sliver">10.2</a>, looks as expected – sliver polygons are now removed.</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:sliver"></span>
+<img src="images/10-sliver.png" alt="Sliver polygons colored in red (left panel). Cleaned polygons (right panel)." width="100%"><p class="caption">
+FIGURE 10.2: Sliver polygons colored in red (left panel). Cleaned polygons (right panel).
+</p>
+</div>
+</div>
+<div id="qgis-raster" class="section level3" number="10.2.2">
+<h3>
+<span class="header-section-number">10.2.2</span> Raster data<a class="anchor" aria-label="anchor" href="#qgis-raster"><i class="fas fa-link"></i></a>
+</h3>
+<p>Digital elevation models (DEMs) contain elevation information for each raster cell.
+They are used for many purposes, including satellite navigation, water flow models, surface analysis, or visualization.
+Here, we are interested in deriving new information from a DEM raster that could be used as predictors for statistical learning.
+Various terrain parameters can be helpful, for example, for the prediction of landslides (see Chapter <a href="spatial-cv.html#spatial-cv">12</a>).</p>
+<p>For this section, we will use <code>dem.tif</code> – a digital elevation model of the Mongón study area (downloaded from the Land Process Distributed Active Archive Center, see also <code><a href="https://rdrr.io/pkg/spDataLarge/man/dem.tif.html">?dem.tif</a></code>).
+It has a resolution of about 30 x 30 meters and uses a projected CRS.</p>
+<div class="sourceCode" id="cb361"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/qgisprocess/">qgisprocess</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/">terra</a></span><span class="op">)</span></span>
+<span><span class="va">dem</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"raster/dem.tif"</span>, package <span class="op">=</span> <span class="st">"spDataLarge"</span><span class="op">)</span></span></code></pre></div>
+<p>The <strong>terra</strong> package’s <code><a href="https://rspatial.github.io/terra/reference/terrain.html">terrain()</a></code> command already allows the calculation of several fundamental topographic characteristics such as slope, aspect, TPI (<em>Topographic Position Index</em>), TRI (<em>Topographic Ruggedness Index</em>), roughness, and flow directions.
+However, GIS programs offer many more terrain characteristics, some of which can be more suitable in certain contexts.
+For example, the topographic wetness index (TWI) was found useful in studying hydrological and biological processes <span class="citation">(<a href="references.html#ref-sorensen_calculation_2006">Sørensen, Zinko, and Seibert 2006</a>)</span>.
+Let’s search the algorithm list for this index using <code>"wetness"</code> as keyword.</p>
+<div class="sourceCode" id="cb362"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_search_algorithms.html">qgis_search_algorithms</a></span><span class="op">(</span><span class="st">"wetness"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">provider_title</span>, <span class="va">algorithm</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/headtail.html">head</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 2 × 2</span></span>
+<span><span class="co">#&gt;   provider_title algorithm</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;          &lt;chr&gt;</span></span>
+<span><span class="co">#&gt; 1 SAGA Next Gen  sagang:sagawetnessindex</span></span>
+<span><span class="co">#&gt; 2 SAGA Next Gen  sagang:topographicwetnessindexonestep</span></span></code></pre></div>
+<p>An output of the above code suggests that the desired algorithm exists in the SAGA software.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;TWI can be also calculated using the &lt;code&gt;r.topidx&lt;/code&gt; GRASS GIS function.&lt;/p&gt;"><sup>63</sup></a>
+Though SAGA is a hybrid GIS, its main focus has been on raster processing, and here, particularly on digital elevation models (soil properties, terrain attributes, climate parameters).
+Hence, SAGA is especially good at the fast processing of large (high-resolution) raster datasets <span class="citation">(<a href="references.html#ref-conrad_system_2015">Conrad et al. 2015</a>)</span>.</p>
+<p>The <code>"sagang:sagawetnessindex"</code> algorithm is actually a modified TWI, that results in a more realistic soil moisture potential for the cells located in valley floors <span class="citation">(<a href="references.html#ref-bohner_spatial_2006">Böhner and Selige 2006</a>)</span>.</p>
+<div class="sourceCode" id="cb363"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_show_help.html">qgis_show_help</a></span><span class="op">(</span><span class="st">"sagang:sagawetnessindex"</span><span class="op">)</span></span></code></pre></div>
+<p>Here, we stick with the default values for all arguments.
+Therefore, we only have to specify one argument – the input <code>DEM</code>.
+Of course, when applying this algorithm you should make sure that the parameter values are in correspondence with your study aim.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;The additional arguments of &lt;code&gt;"sagang:sagawetnessindex"&lt;/code&gt; are well-explained at &lt;a href="https://gis.stackexchange.com/a/323454/20955" class="uri"&gt;https://gis.stackexchange.com/a/323454/20955&lt;/a&gt;.&lt;/p&gt;'><sup>64</sup></a></p>
+<p>Before running the SAGA algorithm from within QGIS, we change the default raster output format from <code>.tif</code> to SAGA’s native raster format <code>.sdat</code>.
+Hence, all output rasters that we do not specify ourselves will from now on be written to the <code>.sdat</code> format.
+Depending on the software versions (SAGA, GDAL) you are using, this might not be necessary, but often enough this will save you trouble when trying to read-in output rasters created with SAGA.</p>
+<div class="sourceCode" id="cb364"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>qgisprocess.tmp_raster_ext <span class="op">=</span> <span class="st">".sdat"</span><span class="op">)</span></span>
+<span><span class="va">dem_wetness</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_run_algorithm.html">qgis_run_algorithm</a></span><span class="op">(</span><span class="st">"sagang:sagawetnessindex"</span>,</span>
+<span>  DEM <span class="op">=</span> <span class="va">dem</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><code>"sagang:sagawetnessindex"</code> returns not one but four rasters – catchment area, catchment slope, modified catchment area, and topographic wetness index.
+We can read a selected output by providing an output name in the <code><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_as_terra.html">qgis_as_terra()</a></code> function.
+And since we are done with the SAGA processing from within QGIS, we change the raster output format back to <code>.tif</code>.</p>
+<div class="sourceCode" id="cb365"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dem_wetness_twi</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_as_terra.html">qgis_as_terra</a></span><span class="op">(</span><span class="va">dem_wetness</span><span class="op">$</span><span class="va">TWI</span><span class="op">)</span></span>
+<span><span class="co"># plot(dem_wetness_twi)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>qgisprocess.tmp_raster_ext <span class="op">=</span> <span class="st">".tif"</span><span class="op">)</span></span></code></pre></div>
+<p>You can see the TWI map in the left panel of Figure <a href="gis.html#fig:qgis-raster-map">10.3</a>.
+The topographic wetness index is unitless: its low values represent areas that will not accumulate water, while higher values show areas that will accumulate water at increasing levels.</p>
+<p>Information from digital elevation models can also be categorized, for example, to geomorphons – the geomorphological phenotypes consisting of ten classes that represent terrain forms, such as slopes, ridges, or valleys <span class="citation">(<a href="references.html#ref-jasiewicz_geomorphons_2013">Jasiewicz and Stepinski 2013</a>)</span>.
+These phenotypes are used in many studies, including landslide susceptibility, ecosystem services, human mobility, and digital soil mapping.</p>
+<p>The original implementation of the geomorphons’ algorithm was created in GRASS GIS, and we can find it in the <strong>qgisprocess</strong> list as <code>"grass:r.geomorphon"</code>:</p>
+<div class="sourceCode" id="cb366"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_search_algorithms.html">qgis_search_algorithms</a></span><span class="op">(</span><span class="st">"geomorphon"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "grass:r.geomorphon" "sagang:geomorphons" </span></span>
+<span><span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_show_help.html">qgis_show_help</a></span><span class="op">(</span><span class="st">"grass:r.geomorphon"</span><span class="op">)</span></span>
+<span><span class="co"># output not shown</span></span></code></pre></div>
+<p>Calculation of geomorphons requires an input DEM (<code>elevation</code>) and can be customized with a set of optional arguments.
+It includes, <code>search</code> – a length for which the line-of-sight is calculated, and <code>-m</code> – a flag specifying that the search value will be provided in meters (and not the number of cells).
+More information about additional arguments can be found in the original paper and the <a href="https://grass.osgeo.org/grass-stable/manuals/r.geomorphon.html">GRASS GIS documentation</a>.</p>
+<div class="sourceCode" id="cb367"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dem_geomorph</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_run_algorithm.html">qgis_run_algorithm</a></span><span class="op">(</span><span class="st">"grass:r.geomorphon"</span>,</span>
+<span>  elevation <span class="op">=</span> <span class="va">dem</span>,</span>
+<span>  `-m` <span class="op">=</span> <span class="cn">TRUE</span>, search <span class="op">=</span> <span class="fl">120</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Our output, <code>dem_geomorph$forms</code>, contains a raster file with ten categories – each representing a terrain form.
+We can read it into R with <code><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_as_terra.html">qgis_as_terra()</a></code>, and then visualize it (Figure <a href="gis.html#fig:qgis-raster-map">10.3</a>, right panel) or use it in our subsequent calculations.</p>
+<div class="sourceCode" id="cb368"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dem_geomorph_terra</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/qgisprocess/reference/qgis_as_terra.html">qgis_as_terra</a></span><span class="op">(</span><span class="va">dem_geomorph</span><span class="op">$</span><span class="va">forms</span><span class="op">)</span></span></code></pre></div>
+<p>Interestingly, there are connections between some geomorphons and the TWI values, as shown in Figure <a href="gis.html#fig:qgis-raster-map">10.3</a>.
+The largest TWI values mostly occur in valleys and hollows, while the lowest values are seen, as expected, on ridges.</p>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:qgis-raster-map"></span>
+<img src="images/10-qgis-raster-map.png" alt="Topographic wetness index (TWI, left panel) and geomorphons (right panel) derived for the Mongón study area." width="100%"><p class="caption">
+FIGURE 10.3: Topographic wetness index (TWI, left panel) and geomorphons (right panel) derived for the Mongón study area.
+</p>
+</div>
+</div>
+</div>
+<div id="saga" class="section level2" number="10.3">
+<h2>
+<span class="header-section-number">10.3</span> SAGA<a class="anchor" aria-label="anchor" href="#saga"><i class="fas fa-link"></i></a>
+</h2>
+<p>The System for Automated Geoscientific Analyses (SAGA; Table <a href="gis.html#tab:gis-comp">10.1</a>) provides the possibility to execute SAGA modules via the command-line interface (<code>saga_cmd.exe</code> under Windows and just <code>saga_cmd</code> under Linux) (see the <a href="https://sourceforge.net/p/saga-gis/wiki/Executing%20Modules%20with%20SAGA%20CMD/">SAGA wiki on modules</a>).
+In addition, there is a Python interface (SAGA Python API).
+<strong>Rsagacmd</strong> uses the former to run SAGA from within R.</p>
+<p>We will use <strong>Rsagacmd</strong> in this section to delineate areas with similar values of the normalized difference vegetation index (NDVI) of the Mongón study area in Peru from September in the year 2000 (Figure <a href="gis.html#fig:sagasegments">10.4</a>, left panel) by using a seeded region growing algorithm from SAGA.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;Read Section &lt;a href="spatial-operations.html#local-operations"&gt;4.3.3&lt;/a&gt; on details of how to calculate NDVI from a remote-sensing image.&lt;/p&gt;'><sup>65</sup></a></p>
+<div class="sourceCode" id="cb369"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ndvi</span> <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"raster/ndvi.tif"</span>, package <span class="op">=</span> <span class="st">"spDataLarge"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>To start using <strong>Rsagacmd</strong>, we need to run the <code><a href="https://stevenpawley.github.io/Rsagacmd/reference/saga_gis.html">saga_gis()</a></code> function.
+It serves two main purposes:</p>
+<ul>
+<li>It dynamically<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;This means that the available libraries will depend on the installed SAGA version.&lt;/p&gt;"><sup>66</sup></a> creates a new object that contains links to all valid SAGA libraries and tools</li>
+<li>It sets up general package options, such as <code>raster_backend</code> (R package to use for handling raster data), <code>vector_backend</code> (R package to use for handling vector data), and <code>cores</code> (a maximum number of CPU cores used for processing, default: all)</li>
+</ul>
+<div class="sourceCode" id="cb370"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://stevenpawley.github.io/Rsagacmd/">Rsagacmd</a></span><span class="op">)</span></span>
+<span><span class="va">saga</span> <span class="op">=</span> <span class="fu"><a href="https://stevenpawley.github.io/Rsagacmd/reference/saga_gis.html">saga_gis</a></span><span class="op">(</span>raster_backend <span class="op">=</span> <span class="st">"terra"</span>, vector_backend <span class="op">=</span> <span class="st">"sf"</span><span class="op">)</span></span></code></pre></div>
+<p>Our <code>saga</code> object contains connections to all of the available SAGA tools.
+It is organized as a list of libraries (groups of tools), and inside of a library it has a list of tools.
+We can access any tool with the <code>$</code> sign (remember to use TAB for autocompletion).</p>
+<p>The seeded region growing algorithm works in two main steps <span class="citation">(<a href="references.html#ref-adams_seeded_1994">Adams and Bischof 1994</a>; <a href="references.html#ref-bohner_image_2006">Böhner, Selige, and Ringeler 2006</a>)</span>.
+First, initial cells (“seeds”) are generated by finding the cells with the smallest variance in local windows of a specified size.
+Second, the region growing algorithm is used to merge neighboring pixels of the seeds to create homogeneous areas.</p>
+<div class="sourceCode" id="cb371"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sg</span> <span class="op">=</span> <span class="va">saga</span><span class="op">$</span><span class="va">imagery_segmentation</span><span class="op">$</span><span class="va">seed_generation</span></span></code></pre></div>
+<p>In the above example, we first pointed to the <code>imagery_segmentation</code> library and then its <code>seed_generation</code> tool.
+We also assigned it to the <code>sg</code> object, not to retype the whole tool code in our next steps.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;You can read more about the tool at &lt;a href="https://saga-gis.sourceforge.io/saga_tool_doc/8.3.0/imagery_segmentation_2.html" class="uri"&gt;https://saga-gis.sourceforge.io/saga_tool_doc/8.3.0/imagery_segmentation_2.html&lt;/a&gt;.&lt;/p&gt;'><sup>67</sup></a>
+If we just type <code>sg</code>, we will get a quick summary of the tool and a data frame with its parameters, descriptions, and defaults.
+You may also use <code>tidy(sg)</code> to extract just the parameters’ table.
+The <code>seed_generation</code> tool takes a raster dataset as its first argument (<code>features</code>); optional arguments include <code>band_width</code> that specifies the size of initial polygons.</p>
+<div class="sourceCode" id="cb372"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ndvi_seeds</span> <span class="op">=</span> <span class="fu">sg</span><span class="op">(</span><span class="va">ndvi</span>, band_width <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co"># plot(ndvi_seeds$seed_grid)</span></span></code></pre></div>
+<p>Our output is a list of three objects: <code>variance</code> – a raster map of local variance, <code>seed_grid</code> – a raster map with the generated seeds, and <code>seed_points</code> – a spatial vector object with the generated seeds.</p>
+<p>The second SAGA tool we use is <code>seeded_region_growing</code>.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;You can read more about the tool at &lt;a href="https://saga-gis.sourceforge.io/saga_tool_doc/8.3.0/imagery_segmentation_3.html" class="uri"&gt;https://saga-gis.sourceforge.io/saga_tool_doc/8.3.0/imagery_segmentation_3.html&lt;/a&gt;.&lt;/p&gt;'><sup>68</sup></a>
+The <code>seeded_region_growing</code> tool requires two inputs: our <code>seed_grid</code> calculated in the previous step and the <code>ndvi</code> raster object.
+Additionally, we can specify several parameters, such as <code>normalize</code> to standardize the input features, <code>neighbour</code> (4- or 8-neighborhood), and <code>method</code>.
+The last parameter can be set to either <code>0</code> or <code>1</code> (region growing is based on raster cells’ values and their positions or just the values).
+For a more detailed description of the method, see <span class="citation">Böhner, Selige, and Ringeler (<a href="references.html#ref-bohner_image_2006">2006</a>)</span>.</p>
+<p>Here, we will only change <code>method</code> to <code>1</code>, meaning that our output regions will be created only based on the similarity of their NDVI values.</p>
+<div class="sourceCode" id="cb373"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">srg</span> <span class="op">=</span> <span class="va">saga</span><span class="op">$</span><span class="va">imagery_segmentation</span><span class="op">$</span><span class="va">seeded_region_growing</span></span>
+<span><span class="va">ndvi_srg</span> <span class="op">=</span> <span class="fu">srg</span><span class="op">(</span><span class="va">ndvi_seeds</span><span class="op">$</span><span class="va">seed_grid</span>, <span class="va">ndvi</span>, method <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">ndvi_srg</span><span class="op">$</span><span class="va">segments</span><span class="op">)</span></span></code></pre></div>
+<p>The tool returns a list of three objects: <code>segments</code>, <code>similarity</code>, <code>table</code>.
+The <code>similarity</code> object is a raster showing similarity between the seeds and the other cells, and <code>table</code> is a data frame storing information about the input seeds.
+Finally, <code>ndvi_srg$segments</code> is a raster with our resulting areas (Figure <a href="gis.html#fig:sagasegments">10.4</a>, right panel).
+We can convert it into polygons with <code><a href="https://rspatial.github.io/terra/reference/as.polygons.html">as.polygons()</a></code> and <code><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf()</a></code> (Section <a href="raster-vector.html#spatial-vectorization">6.5</a>).</p>
+<div class="sourceCode" id="cb374"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">ndvi_segments</span> <span class="op">=</span> <span class="va">ndvi_srg</span><span class="op">$</span><span class="va">segments</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rspatial.github.io/terra/reference/as.polygons.html">as.polygons</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:sagasegments"></span>
+<img src="images/10-saga-segments.png" alt="Normalized difference vegetation index (NDVI, left panel) and NDVI-based segments derived using the seeded region growing algorithm for the Mongón study area." width="100%"><p class="caption">
+FIGURE 10.4: Normalized difference vegetation index (NDVI, left panel) and NDVI-based segments derived using the seeded region growing algorithm for the Mongón study area.
+</p>
+</div>
+<p>The resulting polygons (segments) represent areas with similar values.
+They can also be further aggregated into larger polygons using various techniques, such as clustering (e.g., <em>k</em>-means), regionalization (e.g., SKATER) or supervised classification methods.
+You can try to do it in the Exercises.</p>
+<p>R also has other tools to achieve the goal of creating polygons with similar values (so-called segments).
+It includes the <strong>SegOptim</strong> package <span class="citation">(<a href="references.html#ref-goncalves_segoptim_2019">Gonçalves et al. 2019</a>)</span> that allows running several image segmentation algorithms and <strong>supercells</strong> package <span class="citation">(<a href="references.html#ref-nowosad_extended_2022">Nowosad and Stepinski 2022</a>)</span> that implements superpixels algorithm SLIC to work with geospatial data.</p>
+</div>
+<div id="grass" class="section level2" number="10.4">
+<h2>
+<span class="header-section-number">10.4</span> GRASS GIS<a class="anchor" aria-label="anchor" href="#grass"><i class="fas fa-link"></i></a>
+</h2>
+<p>The U.S. Army - Construction Engineering Research Laboratory (USA-CERL) created the core of the Geographical Resources Analysis Support System (GRASS GIS) (Table <a href="gis.html#tab:gis-comp">10.1</a>; <span class="citation">Neteler and Mitasova (<a href="references.html#ref-neteler_open_2008">2008</a>)</span>) from 1982 to 1995.
+Academia continued this work since 1997.
+Similar to SAGA, GRASS GIS focused on raster processing in the beginning while, only later since GRASS GIS 6.0, adding advanced vector functionality <span class="citation">(<a href="references.html#ref-bivand_applied_2013">Bivand, Pebesma, and Gómez-Rubio 2013</a>)</span>.</p>
+<p>GRASS GIS stores the input data in an internal database.
+With regard to vector data, GRASS GIS is by default a topological GIS, i.e., it only stores the geometry of adjacent features once.
+SQLite is the default database driver for vector attribute management, and attributes are linked to the geometry, i.e., to the GRASS GIS database, via keys (<a href="https://grasswiki.osgeo.org/wiki/Vector_Database_Management#GRASS_GIS_vector_management_model">GRASS GIS vector management</a>).</p>
+<p>Before one can use GRASS GIS, one has to set up the GRASS GIS database (also from within R), and users might find this process a bit intimidating in the beginning.
+First of all, the GRASS GIS database requires its own directory, which, in turn, contains a location (see the <a href="https://grass.osgeo.org/grass-stable/manuals/grass_database.html">GRASS GIS Database</a> help pages at <a href="https://grass.osgeo.org/grass-stable/manuals/index.html">grass.osgeo.org</a> for further information).
+The location stores the geodata for one project or one area.
+Within one location, several mapsets can exist that typically refer to different users or different tasks.
+Each location also has a PERMANENT mapset – a mandatory mapset that is created automatically.
+In order to share geographic data with all users of a project, the database owner can add spatial data to the PERMANENT mapset.
+In addition, the PERMANENT mapset stores the projection, the spatial extent and the default resolution for raster data.
+So, to sum it all up – the GRASS GIS database may contain many locations (all data in one location have the same CRS), and each location can store many mapsets (groups of datasets).
+Please refer to <span class="citation">Neteler and Mitasova (<a href="references.html#ref-neteler_open_2008">2008</a>)</span> and the <a href="https://grass.osgeo.org/grass-stable/manuals/helptext.html">GRASS GIS quick start</a> for more information on the GRASS GIS spatial database system.
+To quickly use GRASS GIS from within R, we will use the <strong>link2GI</strong> package, however, one can also set up the GRASS GIS database step-by-step.
+See <a href="https://grasswiki.osgeo.org/wiki/R_statistics/rgrass#GRASS_within_R">GRASS within R</a> for how to do so.
+Please note that the code instructions in the following paragraphs might be hard to follow when using GRASS GIS for the first time but by running through the code line-by-line and by examining the intermediate results, the reasoning behind it should become even clearer.</p>
+<p>Here, we introduce <strong>rgrass</strong> with one of the most interesting problems in GIScience: the traveling salesman problem.
+Suppose a traveling salesman would like to visit 24 customers.
+Additionally, the salesman would like to start and finish the journey at home which makes a total of 25 locations while covering the shortest distance possible.
+There is a single best solution to this problem; however, to check all of the possible solutions, it is (mostly) impossible for modern computers <span class="citation">(<a href="references.html#ref-longley_geographic_2015">Longley 2015</a>)</span>.
+In our case, the number of possible solutions correspond to <code>(25 - 1)! / 2</code>, i.e., the factorial of 24 divided by 2 (since we do not differentiate between forward or backward direction).
+Even if one iteration can be done in a nanosecond, this still corresponds to 9837145 years.
+Luckily, there are clever, almost optimal solutions which run in a tiny fraction of this inconceivable amount of time.
+GRASS GIS provides one of these solutions (for more details, see <a href="https://grass.osgeo.org/grass-stable/manuals/v.net.salesman.html">v.net.salesman</a>).
+In our use case, we would like to find the shortest path between the first 25 bicycle stations (instead of customers) on London’s streets (and we simply assume that the first bike station corresponds to the home of our traveling salesman).</p>
+<div class="sourceCode" id="cb375"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"cycle_hire"</span>, package <span class="op">=</span> <span class="st">"spData"</span><span class="op">)</span></span>
+<span><span class="va">points</span> <span class="op">=</span> <span class="va">cycle_hire</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">25</span>, <span class="op">]</span></span></code></pre></div>
+<p>Aside from the cycle hire points data, we need a street network for this area.
+We can download it from OpenStreetMap with the help of the <strong>osmdata</strong> package (see also Section <a href="read-write.html#retrieving-data">8.5</a>).
+To do this, we constrain the query of the street network (in OSM language called “highway”) to the bounding box of <code>points</code>, and attach the corresponding data as an <code>sf</code>-object.
+<code><a href="https://docs.ropensci.org/osmdata/reference/osmdata_sf.html">osmdata_sf()</a></code> returns a list with several spatial objects (points, lines, polygons, etc.), but here, we only keep the line objects with their related ids.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;As a convenience to the reader, one can attach &lt;code&gt;london_streets&lt;/code&gt; to the global environment using &lt;code&gt;data("london_streets", package = "spDataLarge")&lt;/code&gt;.&lt;/p&gt;'><sup>69</sup></a></p>
+<div class="sourceCode" id="cb376"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://docs.ropensci.org/osmdata/">osmdata</a></span><span class="op">)</span></span>
+<span><span class="va">b_box</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html">st_bbox</a></span><span class="op">(</span><span class="va">points</span><span class="op">)</span></span>
+<span><span class="va">london_streets</span> <span class="op">=</span> <span class="fu"><a href="https://docs.ropensci.org/osmdata/reference/opq.html">opq</a></span><span class="op">(</span><span class="va">b_box</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/osmdata/reference/add_osm_feature.html">add_osm_feature</a></span><span class="op">(</span>key <span class="op">=</span> <span class="st">"highway"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://docs.ropensci.org/osmdata/reference/osmdata_sf.html">osmdata_sf</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">london_streets</span> <span class="op">=</span> <span class="va">london_streets</span><span class="op">[[</span><span class="st">"osm_lines"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="va">london_streets</span> <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">london_streets</span>, <span class="va">osm_id</span><span class="op">)</span></span></code></pre></div>
+<p>Now that we have the data, we can go on and initiate a GRASS GIS session.
+Luckily, <code>linkGRASS()</code> of the <strong>link2GI</strong> packages lets one set up the GRASS GIS environment with just one line of code.
+The only thing you need to provide is a spatial object which determines the projection and the extent of the spatial database.
+First, <code>linkGRASS()</code> finds all GRASS GIS installations on your computer.
+Since we have set <code>ver_select</code> to <code>TRUE</code>, we can interactively choose one of the found GRASS GIS-installations.
+If there is just one installation, the <code>linkGRASS()</code> automatically chooses it.
+Second, <code>linkGRASS()</code> establishes a connection to GRASS GIS.</p>
+<div class="sourceCode" id="cb377"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rsbivand.github.io/rgrass/">rgrass</a></span><span class="op">)</span></span>
+<span><span class="fu">link2GI</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/link2GI/reference/linkGRASS.html">linkGRASS</a></span><span class="op">(</span><span class="va">london_streets</span>, ver_select <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>Before we can use GRASS GIS geoalgorithms, we also need to add data to GRASS GIS’s spatial database.
+Luckily, the convenience function <code><a href="https://rdrr.io/pkg/rgrass/man/readVECT.html">write_VECT()</a></code> does this for us.
+(Use <code><a href="https://rdrr.io/pkg/rgrass/man/readRAST.html">write_RAST()</a></code> for raster data.)
+In our case, we add the street and cycle hire point data while using only the first attribute column, and name them as <code>london_streets</code> and <code>points</code> in GRASS GIS.</p>
+<div class="sourceCode" id="cb378"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/rgrass/man/readVECT.html">write_VECT</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html">vect</a></span><span class="op">(</span><span class="va">london_streets</span><span class="op">)</span>, vname <span class="op">=</span> <span class="st">"london_streets"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/rgrass/man/readVECT.html">write_VECT</a></span><span class="op">(</span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html">vect</a></span><span class="op">(</span><span class="va">points</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span>, vname <span class="op">=</span> <span class="st">"points"</span><span class="op">)</span></span></code></pre></div>
+<p>The <strong>rgrass</strong> package expects its inputs and gives its outputs as <strong>terra</strong> objects.
+Therefore, we need to convert our <code>sf</code> spatial vectors to <strong>terra</strong>’s <code>SpatVector</code>s using the <code><a href="https://rspatial.github.io/terra/reference/vect.html">vect()</a></code> function to be able to use <code><a href="https://rdrr.io/pkg/rgrass/man/readVECT.html">write_VECT()</a></code>.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;You can learn more how to convert between spatial classes in R by reading the (Conversions between different spatial classes in R)[&lt;a href="https://geocompx.org/post/2021/spatial-classes-conversion/" class="uri"&gt;https://geocompx.org/post/2021/spatial-classes-conversion/&lt;/a&gt;] blog post and the
+(Coercion between object formats)[&lt;a href="https://CRAN.R-project.org/package=rgrass/vignettes/coerce.html" class="uri"&gt;https://CRAN.R-project.org/package=rgrass/vignettes/coerce.html&lt;/a&gt;] vignette.&lt;/p&gt;'><sup>70</sup></a></p>
+<p>Now, both datasets exist in the GRASS GIS database.
+To perform our network analysis, we need a topologically clean street network.
+GRASS GIS’s <code>"v.clean"</code> takes care of the removal of duplicates, small angles and dangles, among others.
+Here, we break lines at each intersection to ensure that the subsequent routing algorithm can actually turn right or left at an intersection, and save the output in a GRASS GIS object named <code>streets_clean</code>.</p>
+<div class="sourceCode" id="cb379"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/rgrass/man/execGRASS.html">execGRASS</a></span><span class="op">(</span></span>
+<span>  cmd <span class="op">=</span> <span class="st">"v.clean"</span>, input <span class="op">=</span> <span class="st">"london_streets"</span>, output <span class="op">=</span> <span class="st">"streets_clean"</span>,</span>
+<span>  tool <span class="op">=</span> <span class="st">"break"</span>, flags <span class="op">=</span> <span class="st">"overwrite"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+
+<div class="rmdnote">
+To learn about the possible arguments and flags of the GRASS GIS modules, you can use the <code>help</code> flag.
+For example, try <code>execGRASS("g.region", flags = "help")</code>.
+</div>
+<p>It is likely that a few of our cycling station points will not lie exactly on a street segment.
+However, to find the shortest route between them, we need to connect them to the nearest streets segment.
+<code>"v.net"</code>’s connect-operator does exactly this.
+We save its output in <code>streets_points_con</code>.</p>
+<div class="sourceCode" id="cb380"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/rgrass/man/execGRASS.html">execGRASS</a></span><span class="op">(</span></span>
+<span>  cmd <span class="op">=</span> <span class="st">"v.net"</span>, input <span class="op">=</span> <span class="st">"streets_clean"</span>, output <span class="op">=</span> <span class="st">"streets_points_con"</span>,</span>
+<span>  points <span class="op">=</span> <span class="st">"points"</span>, operation <span class="op">=</span> <span class="st">"connect"</span>, threshold <span class="op">=</span> <span class="fl">0.001</span>,</span>
+<span>  flags <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"overwrite"</span>, <span class="st">"c"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>The resulting clean dataset serves as input for the <code>"v.net.salesman"</code> algorithm, which finally finds the shortest route between all cycle hire stations.
+One of its arguments is <code>center_cats</code>, which requires a numeric range as input.
+This range represents the points for which a shortest route should be calculated.
+Since we would like to calculate the route for all cycle stations, we set it to <code>1-25</code>.
+To access the GRASS GIS help page of the traveling salesman algorithm, run <code>execGRASS("g.manual", entry = "v.net.salesman")</code>.</p>
+<div class="sourceCode" id="cb381"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/rgrass/man/execGRASS.html">execGRASS</a></span><span class="op">(</span></span>
+<span>  cmd <span class="op">=</span> <span class="st">"v.net.salesman"</span>, input <span class="op">=</span> <span class="st">"streets_points_con"</span>,</span>
+<span>  output <span class="op">=</span> <span class="st">"shortest_route"</span>, center_cats <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"1-"</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">points</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  flags <span class="op">=</span> <span class="st">"overwrite"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>To see our result, we read the result into R, convert it into an <code>sf</code>-object keeping only the geometry, and visualize it with the help of the <strong>mapview</strong> package (Figure <a href="gis.html#fig:grass-mapview">10.5</a> and Section <a href="adv-map.html#interactive-maps">9.4</a>).</p>
+<div class="sourceCode" id="cb382"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">route</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/rgrass/man/readVECT.html">read_VECT</a></span><span class="op">(</span><span class="st">"shortest_route"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">mapview</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/mapview/man/mapView.html">mapview</a></span><span class="op">(</span><span class="va">route</span><span class="op">)</span> <span class="op">+</span> <span class="va">points</span></span></code></pre></div>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:grass-mapview"></span>
+<img src="images/10_shortest_route.png" alt="Shortest route (blue line) between 24 cycle hire stations (blue dots) on the OSM street network of London." width="80%"><p class="caption">
+FIGURE 10.5: Shortest route (blue line) between 24 cycle hire stations (blue dots) on the OSM street network of London.
+</p>
+</div>
+<p>There are a few important considerations to note in the process:</p>
+<ul>
+<li>We could have used GRASS GIS’s spatial database which allows faster processing.
+That means we have only exported geographic data at the beginning.
+Then we created new objects but only imported the final result back into R.
+To find out which datasets are currently available, run <code>execGRASS("g.list", type = "vector,raster", flags = "p")</code>.</li>
+<li>We could have also accessed an already existing GRASS GIS spatial database from within R.
+Prior to importing data into R, you might want to perform some (spatial) subsetting.
+Use <code>"v.select"</code> and <code>"v.extract"</code> for vector data.
+<code>"db.select"</code> lets you select subsets of the attribute table of a vector layer without returning the corresponding geometry.</li>
+<li>You can also start R from within a running GRASS GIS session <span class="citation">(for more information, please refer to <a href="references.html#ref-bivand_applied_2013">Bivand, Pebesma, and Gómez-Rubio 2013</a>)</span>.</li>
+<li>Refer to the excellent <a href="https://grass.osgeo.org/grass-stable/manuals/">GRASS GIS online help</a> or <code>execGRASS("g.manual", flags = "i")</code> for more information on each available GRASS GIS geoalgorithm.</li>
+</ul>
+</div>
+<div id="when-to-use-what" class="section level2" number="10.5">
+<h2>
+<span class="header-section-number">10.5</span> When to use what?<a class="anchor" aria-label="anchor" href="#when-to-use-what"><i class="fas fa-link"></i></a>
+</h2>
+<p>To recommend a single R-GIS interface is hard since the usage depends on personal preferences, the tasks at hand, and your familiarity with different GIS software packages which in turn probably depends on your domain.
+As mentioned previously, SAGA is especially good at the fast processing of large (high-resolution) raster datasets and frequently used by hydrologists, climatologists and soil scientists <span class="citation">(<a href="references.html#ref-conrad_system_2015">Conrad et al. 2015</a>)</span>.
+GRASS GIS, on the other hand, is the only GIS presented here supporting a topologically based spatial database which is especially useful for network analyses but also simulation studies.
+QGISS is much more user-friendly compared to GRASS GIS and SAGA, especially for first-time GIS users, and probably the most popular open-source GIS.
+Therefore, <strong>qgisprocess</strong> is an appropriate choice for most use cases.
+Its main advantages are:</p>
+<ul>
+<li>A unified access to several GIS, and therefore the provision of &gt;1000 geoalgorithms (Table <a href="gis.html#tab:gis-comp">10.1</a>) including duplicated functionality, e.g., you can perform overlay-operations using QGIS-, SAGA- or GRASS GIS-geoalgorithms</li>
+<li>Automatic data format conversions (SAGA uses <code>.sdat</code> grid files and GRASS GIS uses its own database format, but QGIS will handle the corresponding conversions)</li>
+<li>Its automatic passing of geographic R objects to QGIS geoalgorithms and back into R</li>
+<li>Convenience functions to support named arguments and automatic default value retrieval (as inspired by <strong>rgrass</strong>)</li>
+</ul>
+<p>By all means, there are use cases when you certainly should use one of the other R-GIS bridges.
+Though QGIS is the only GIS providing a unified interface to several GIS software packages, it only provides access to a subset of the corresponding third-party geoalgorithms (for more information, please refer to <span class="citation">Muenchow, Schratz, and Brenning (<a href="references.html#ref-muenchow_rqgis:_2017">2017</a>)</span>).
+Therefore, to use the complete set of SAGA and GRASS GIS functions, stick with <strong>Rsagacmd</strong> and <strong>rgrass</strong>.
+In addition, if you would like to run simulations with the help of a geodatabase <span class="citation">(<a href="references.html#ref-krug_clearing_2010">Krug, Roura-Pascual, and Richardson 2010</a>)</span>, use <strong>rgrass</strong> directly since <strong>qgisprocess</strong> always starts a new GRASS GIS session for each call.
+Finally, if you need topological correct data and/or spatial database management functionality such as multi-user access, we recommend the usage of GRASS GIS.</p>
+<p>Please note that there are a number of further GIS software packages that have a scripting interface but for which there is no dedicated R package that accesses these: gvSig, OpenJump, and the Orfeo Toolbox.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;Please note that &lt;strong&gt;link2GI&lt;/strong&gt; provides a partial integration with the Orfeo Toolbox and that you can also access the Orfeo Toolbox geoalgorithms via &lt;strong&gt;qgisprocess&lt;/strong&gt;. Note also that TauDEM can be accessed from R with package &lt;strong&gt;traudem&lt;/strong&gt;.&lt;/p&gt;"><sup>71</sup></a></p>
+</div>
+<div id="gdal" class="section level2" number="10.6">
+<h2>
+<span class="header-section-number">10.6</span> Bridges to GDAL<a class="anchor" aria-label="anchor" href="#gdal"><i class="fas fa-link"></i></a>
+</h2>
+<p>As discussed in Chapter <a href="read-write.html#read-write">8</a>, GDAL is a low-level library that supports many geographic data formats.
+GDAL is so effective that most GIS programs use GDAL in the background for importing and exporting geographic data, rather than reinventing the wheel and using bespoke read-write code.
+But GDAL offers more than data I/O.
+It has <a href="https://gdal.org/programs/index.html">geoprocessing tools</a> for vector and raster data, functionality to create <a href="https://gdal.org/programs/gdal2tiles.html#gdal2tiles">tiles</a> for serving raster data online, and rapid <a href="https://gdal.org/programs/gdal_rasterize.html#gdal-rasterize">rasterization</a> of vector data.
+Since GDAL is a command-line tool, all its commands can be accessed from within R via the <code><a href="https://rdrr.io/r/base/system.html">system()</a></code> command.</p>
+<p>The code chunk below demonstrates this functionality:
+<code>linkGDAL()</code> searches the computer for a working GDAL installation and adds the location of the executable files to the PATH variable, allowing GDAL to be called (usually only needed under Windows).</p>
+<div class="sourceCode" id="cb383"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">link2GI</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/link2GI/reference/linkGDAL.html">linkGDAL</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>Now we can use the <code><a href="https://rdrr.io/r/base/system.html">system()</a></code> function to call any of the GDAL tools.
+For example, <code>ogrinfo</code> provides metadata of a vector dataset.
+Here we will call this tool with two additional flags: <code>-al</code> to list all features of all layers and <code>-so</code> to get a summary only (and not a complete geometry list):</p>
+<div class="sourceCode" id="cb384"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">our_filepath</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html">system.file</a></span><span class="op">(</span><span class="st">"shapes/world.gpkg"</span>, package <span class="op">=</span> <span class="st">"spData"</span><span class="op">)</span></span>
+<span><span class="va">cmd</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="st">"ogrinfo -al -so"</span>, <span class="va">our_filepath</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.html">system</a></span><span class="op">(</span><span class="va">cmd</span><span class="op">)</span></span>
+<span><span class="co">#&gt; INFO: Open of `.../spData/shapes/world.gpkg'</span></span>
+<span><span class="co">#&gt;       using driver `GPKG' successful.</span></span>
+<span><span class="co">#&gt;</span></span>
+<span><span class="co">#&gt; Layer name: world</span></span>
+<span><span class="co">#&gt; Geometry: Multi Polygon</span></span>
+<span><span class="co">#&gt; Feature Count: 177</span></span>
+<span><span class="co">#&gt; Extent: (-180.000000, -89.900000) - (179.999990, 83.645130)</span></span>
+<span><span class="co">#&gt; Layer SRS WKT:</span></span>
+<span><span class="co">#&gt; ...</span></span></code></pre></div>
+<p>Other commonly used GDAL tools include:</p>
+<ul>
+<li>
+<code>gdalinfo</code>: provides metadata of a raster dataset</li>
+<li>
+<code>gdal_translate</code>: converts between different raster file formats</li>
+<li>
+<code>ogr2ogr</code>: converts between different vector file formats</li>
+<li>
+<code>gdalwarp</code>: reprojects, transforms, and clips raster datasets</li>
+<li>
+<code>gdaltransform</code>: transforms coordinates</li>
+</ul>
+<p>Visit <a href="https://gdal.org/programs/" class="uri">https://gdal.org/programs/</a> to see the complete list of GDAL tools and to read their help files.</p>
+<p>The ‘link’ to GDAL provided by <strong>link2GI</strong> could be used as a foundation for doing more advanced GDAL work from the R or system CLI.
+TauDEM (<a href="https://hydrology.usu.edu/taudem/" class="uri">https://hydrology.usu.edu/taudem/</a>) and the Orfeo Toolbox (<a href="https://www.orfeo-toolbox.org/" class="uri">https://www.orfeo-toolbox.org/</a>) are other spatial data processing libraries/programs offering a command-line interface – the above example shows how to access these libraries from the system command line via R.
+This in turn could be the starting point for creating a proper interface to these libraries in the form of new R packages.</p>
+<p>Before diving into a project to create a new bridge, however, it is important to be aware of the power of existing R packages and that <code><a href="https://rdrr.io/r/base/system.html">system()</a></code> calls may not be platform-independent (they may fail on some computers).
+On the other hand, <strong>sf</strong> and <strong>terra</strong> brings most of the power provided by GDAL, GEOS and PROJ to R via the R/C++ interface provided by <strong>Rcpp</strong>, which avoids <code><a href="https://rdrr.io/r/base/system.html">system()</a></code> calls.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;There are also &lt;strong&gt;vapour&lt;/strong&gt; and &lt;strong&gt;gdalraster&lt;/strong&gt; that provide low-level interfaces to GDAL.&lt;/p&gt;"><sup>72</sup></a></p>
+</div>
+<div id="postgis" class="section level2" number="10.7">
+<h2>
+<span class="header-section-number">10.7</span> Bridges to spatial databases<a class="anchor" aria-label="anchor" href="#postgis"><i class="fas fa-link"></i></a>
+</h2>
+<p>
+Spatial database management systems (spatial DBMSs) store spatial and non-spatial data in a structured way.
+They can organize large collections of data into related tables (entities) via unique identifiers (primary and foreign keys) and implicitly via space (think for instance of a spatial join).
+This is useful because geographic datasets tend to become big and messy quite quickly.
+Databases enable storing and querying large datasets efficiently based on spatial and non-spatial fields, and provide multi-user access and topology support.</p>
+<p>The most important open source spatial database is PostGIS <span class="citation">(<a href="references.html#ref-obe_postgis_2015">Obe and Hsu 2015</a>)</span>.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content='&lt;p&gt;
+SQLite/SpatiaLite are certainly also important, but implicitly we have already introduced this approach since GRASS GIS is using SQLite in the background (see Section &lt;a href="gis.html#grass"&gt;10.4&lt;/a&gt;).&lt;/p&gt;'><sup>73</sup></a>
+R bridges to spatial DBMSs such as PostGIS are important, allowing access to huge data stores without loading several gigabytes of geographic data into RAM, and likely crashing the R session.
+The remainder of this section shows how PostGIS can be called from R, based on “Hello real-world” from <em>PostGIS in Action, Second Edition</em> <span class="citation">(<a href="references.html#ref-obe_postgis_2015">Obe and Hsu 2015</a>)</span>.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;
+Thanks to Manning Publications, Regina Obe and Leo Hsu for permission to use this example.&lt;/p&gt;"><sup>74</sup></a></p>
+<p>The subsequent code requires a working internet connection, since we are accessing a PostgreSQL/PostGIS database which is living in the QGIS Cloud (<a href="https://qgiscloud.com/" class="uri">https://qgiscloud.com/</a>).<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;
+QGIS Cloud lets you store geographic data and maps in the cloud.
+In the background, it uses QGIS Server and PostgreSQL/PostGIS.
+This way, the reader can follow the PostGIS example without the need to have PostgreSQL/PostGIS installed on a local machine.
+Thanks to the QGIS Cloud team for hosting this example.&lt;/p&gt;"><sup>75</sup></a>
+Our first step here is to create a connection to a database by providing its name, host name, and user information.</p>
+<div class="sourceCode" id="cb385"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tomoakin/RPostgreSQL">RPostgreSQL</a></span><span class="op">)</span></span>
+<span><span class="va">conn</span> <span class="op">=</span> <span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html">dbConnect</a></span><span class="op">(</span></span>
+<span>  drv <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/RPostgreSQL/man/PostgreSQL.html">PostgreSQL</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  dbname <span class="op">=</span> <span class="st">"rtafdf_zljbqm"</span>, host <span class="op">=</span> <span class="st">"db.qgiscloud.com"</span>,</span>
+<span>  port <span class="op">=</span> <span class="st">"5432"</span>, user <span class="op">=</span> <span class="st">"rtafdf_zljbqm"</span>, password <span class="op">=</span> <span class="st">"d3290ead"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Our new object, <code>conn</code>, is just an established link between our R session and the database.
+It does not store any data.</p>
+<p>Often the first question is, ‘which tables can be found in the database?’.
+This can be answered with <code><a href="https://dbi.r-dbi.org/reference/dbListTables.html">dbListTables()</a></code> as follows:</p>
+<div class="sourceCode" id="cb386"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbListTables.html">dbListTables</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "spatial_ref_sys" "topology"        "layer"           "restaurants"</span></span>
+<span><span class="co">#&gt; [5] "highways"</span></span></code></pre></div>
+<p>The answer is five tables.
+Here, we are only interested in the <code>restaurants</code> and the <code>highways</code> tables.
+The former represents the locations of fast-food restaurants in the US, and the latter are principal US highways.
+To find out about attributes available in a table, we can run <code>dbListFields</code>:</p>
+<div class="sourceCode" id="cb387"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbListFields.html">dbListFields</a></span><span class="op">(</span><span class="va">conn</span>, <span class="st">"highways"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "qc_id"        "wkb_geometry" "gid"          "feature"</span></span>
+<span><span class="co">#&gt; [5] "name"         "state"</span></span></code></pre></div>
+<p>Now, as we know the available datasets, we can perform some queries – ask the database some questions.
+The query needs to be provided in a language understandable by the database – usually, it is SQL.
+The first query will select <code>US Route 1</code> in the state of Maryland (<code>MD</code>) from the <code>highways</code> table.
+Note that <code><a href="https://r-spatial.github.io/sf/reference/st_read.html">read_sf()</a></code> allows us to read geographic data from a database if it is provided with an open connection to a database and a query.
+Additionally, <code><a href="https://r-spatial.github.io/sf/reference/st_read.html">read_sf()</a></code> needs to know which column represents the geometry (here: <code>wkb_geometry</code>).</p>
+<div class="sourceCode" id="cb388"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">query</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span></span>
+<span>  <span class="st">"SELECT *"</span>,</span>
+<span>  <span class="st">"FROM highways"</span>,</span>
+<span>  <span class="st">"WHERE name = 'US Route 1' AND state = 'MD';"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">us_route</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">read_sf</a></span><span class="op">(</span><span class="va">conn</span>, query <span class="op">=</span> <span class="va">query</span>, geom <span class="op">=</span> <span class="st">"wkb_geometry"</span><span class="op">)</span></span></code></pre></div>
+<p>This results in an <strong>sf</strong>-object named <code>us_route</code> of type <code>MULTILINESTRING</code>.</p>
+<p>As we mentioned before, it is also possible to not only ask non-spatial questions, but also query datasets based on their spatial properties.
+To show this, the next example adds a 35-kilometer (35,000 m) buffer around the selected highway (Figure <a href="gis.html#fig:postgis">10.6</a>).</p>
+<div class="sourceCode" id="cb389"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">query</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span></span>
+<span>  <span class="st">"SELECT ST_Union(ST_Buffer(wkb_geometry, 35000))::geometry"</span>,</span>
+<span>  <span class="st">"FROM highways"</span>,</span>
+<span>  <span class="st">"WHERE name = 'US Route 1' AND state = 'MD';"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">buf</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">read_sf</a></span><span class="op">(</span><span class="va">conn</span>, query <span class="op">=</span> <span class="va">query</span><span class="op">)</span></span></code></pre></div>
+<p>Note that this was a spatial query using functions (<code>ST_Union()</code>, <code>ST_Buffer()</code>) you should be already familiar with.
+You find them also in the <strong>sf</strong>-package, though here they are written in lowercase characters (<code><a href="https://r-spatial.github.io/sf/reference/geos_combine.html">st_union()</a></code>, <code><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_buffer()</a></code>).
+In fact, function names of the <strong>sf</strong> package largely follow the PostGIS naming conventions.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;
+The prefix &lt;code&gt;st&lt;/code&gt; stands for space/time.&lt;/p&gt;"><sup>76</sup></a></p>
+<p>The last query will find all Hardee’s restaurants (<code>HDE</code>) within the 35-km buffer zone (Figure <a href="gis.html#fig:postgis">10.6</a>).</p>
+<div class="sourceCode" id="cb390"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">query</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span></span>
+<span>  <span class="st">"SELECT *"</span>,</span>
+<span>  <span class="st">"FROM restaurants r"</span>,</span>
+<span>  <span class="st">"WHERE EXISTS ("</span>,</span>
+<span>  <span class="st">"SELECT gid"</span>,</span>
+<span>  <span class="st">"FROM highways"</span>,</span>
+<span>  <span class="st">"WHERE"</span>,</span>
+<span>  <span class="st">"ST_DWithin(r.wkb_geometry, wkb_geometry, 35000) AND"</span>,</span>
+<span>  <span class="st">"name = 'US Route 1' AND"</span>,</span>
+<span>  <span class="st">"state = 'MD' AND"</span>,</span>
+<span>  <span class="st">"r.franchise = 'HDE');"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">hardees</span> <span class="op">=</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">read_sf</a></span><span class="op">(</span><span class="va">conn</span>, query <span class="op">=</span> <span class="va">query</span><span class="op">)</span></span></code></pre></div>
+<p>Please refer to <span class="citation">Obe and Hsu (<a href="references.html#ref-obe_postgis_2015">2015</a>)</span> for a detailed explanation of the spatial SQL query.
+Finally, it is good practice to close the database connection as follows:<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;
+It is important to close the connection here because QGIS Cloud (free version) allows only ten concurrent connections.&lt;/p&gt;"><sup>77</sup></a></p>
+<div class="sourceCode" id="cb391"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">RPostgreSQL</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/RPostgreSQL/man/postgresqlSupport.html">postgresqlCloseConnection</a></span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span></code></pre></div>
+<div class="figure" style="text-align: center">
+<span style="display:block;" id="fig:postgis"></span>
+<img src="figures/postgis-1.png" alt="Visualization of the output of previous PostGIS commands showing the highway (black line), a buffer (light yellow) and four restaurants (red points) within the buffer." width="100%"><p class="caption">
+FIGURE 10.6: Visualization of the output of previous PostGIS commands showing the highway (black line), a buffer (light yellow) and four restaurants (red points) within the buffer.
+</p>
+</div>
+<p>Unlike PostGIS, <strong>sf</strong> only supports spatial vector data.
+To query and manipulate raster data stored in a PostGIS database, use the <strong>rpostgis</strong> package <span class="citation">(<a href="references.html#ref-bucklin_rpostgis_2018">Bucklin and Basille 2018</a>)</span> and/or use command line tools such as <code>rastertopgsql</code> which comes as part of the PostGIS installation.</p>
+<p>This subsection is only a brief introduction to PostgreSQL/PostGIS.
+Nevertheless, we would like to encourage the practice of storing geographic and non-geographic data in a spatial DBMS while only attaching those subsets to R’s global environment which are needed for further (geo-)statistical analysis.
+Please refer to <span class="citation">Obe and Hsu (<a href="references.html#ref-obe_postgis_2015">2015</a>)</span> for a more detailed description of the SQL queries presented and a more comprehensive introduction to PostgreSQL/PostGIS in general.
+PostgreSQL/PostGIS is a formidable choice as an open-source spatial database.
+But the same is true for the lightweight SQLite/SpatiaLite database engine and GRASS GIS which uses SQLite in the background (see Section <a href="gis.html#grass">10.4</a>).</p>
+<p>If your datasets are too big for PostgreSQL/PostGIS and you require massive spatial data management and query performance, it may be worth exploring large-scale geographic querying on distributed computing systems.
+Such systems are outside the scope of this book, but it is worth mentioning that open source software providing this functionality exists.
+Prominent projects in this space include <a href="http://www.geomesa.org/">GeoMesa</a> and <a href="https://sedona.apache.org/">Apache Sedona</a>.
+The <a href="https://cran.r-project.org/package=apache.sedona"><strong>apache.sedona</strong></a> package provides an interface to the latter.</p>
+</div>
+<div id="cloud" class="section level2" number="10.8">
+<h2>
+<span class="header-section-number">10.8</span> Bridges to cloud technologies and services<a class="anchor" aria-label="anchor" href="#cloud"><i class="fas fa-link"></i></a>
+</h2>
+<p>In recent years, cloud technologies have become more and more prominent on the internet.
+This also includes their use to store and process spatial data.
+Major cloud computing providers (Amazon Web Services, Microsoft Azure / Planetary Computer, Google Cloud Platform, and others) offer vast catalogs of open Earth observation data, such as the complete Sentinel-2 archive, on their platforms.
+We can use R and directly connect to and process data from these archives, ideally from a machine in the same cloud and region.</p>
+<p>Three promising developments that make working with such image archives on cloud platforms <em>easier</em> and <em>more efficient</em> are the <a href="https://stacspec.org">SpatioTemporal Asset Catalog (STAC)</a>, the <a href="https://www.cogeo.org/">cloud-optimized GeoTIFF (COG)</a> image file format, and the concept of data cubes.
+Section <a href="gis.html#staccog">10.8.1</a> introduces these individual developments and briefly describes how they can be used from R.</p>
+<p>Besides hosting large data archives, numerous cloud-based services to process Earth observation data have been launched during the last few years.
+It includes the OpenEO initiative – a unified interface between programming languages (including R) and various cloud-based services.
+You can find more information about OpenEO in Section <a href="gis.html#openeo">10.8.2</a>.</p>
+<div id="staccog" class="section level3" number="10.8.1">
+<h3>
+<span class="header-section-number">10.8.1</span> STAC, COGs, and data cubes in the cloud<a class="anchor" aria-label="anchor" href="#staccog"><i class="fas fa-link"></i></a>
+</h3>
+<p>The SpatioTemporal Asset Catalog (STAC) is a general description format for spatiotemporal data that is used to describe a variety of datasets on cloud platforms including imagery, synthetic aperture radar (SAR) data, and point clouds.
+Besides simple static catalog descriptions, STAC-API presents a web service to query items (e.g., images) of catalogs by space, time, and other properties.
+In R, the <strong>rstac</strong> package <span class="citation">(<a href="references.html#ref-simoes_rstac_2021">Simoes, Souza, et al. 2021</a>)</span> allows to connect to STAC-API endpoints and search for items.
+In the example below, we request all images from the <a href="https://registry.opendata.aws/sentinel-2-l2a-cogs">Sentinel-2 Cloud-Optimized GeoTIFF (COG) dataset on Amazon Web Services</a> that intersect with a predefined area and time of interest.
+The result contains all found images and their metadata (e.g., cloud cover) and URLs pointing to actual files on AWS.</p>
+<div class="sourceCode" id="cb392"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://brazil-data-cube.github.io/rstac/">rstac</a></span><span class="op">)</span></span>
+<span><span class="co"># Connect to the STAC-API endpoint for Sentinel-2 data</span></span>
+<span><span class="co"># and search for images intersecting our AOI</span></span>
+<span><span class="va">s</span> <span class="op">=</span> <span class="fu"><a href="https://brazil-data-cube.github.io/rstac/reference/stac.html">stac</a></span><span class="op">(</span><span class="st">"https://earth-search.aws.element84.com/v0"</span><span class="op">)</span></span>
+<span><span class="va">items</span> <span class="op">=</span> <span class="va">s</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://brazil-data-cube.github.io/rstac/reference/stac_search.html">stac_search</a></span><span class="op">(</span>collections <span class="op">=</span> <span class="st">"sentinel-s2-l2a-cogs"</span>,</span>
+<span>              bbox <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">7.1</span>, <span class="fl">51.8</span>, <span class="fl">7.2</span>, <span class="fl">52.8</span><span class="op">)</span>,</span>
+<span>              datetime <span class="op">=</span> <span class="st">"2020-01-01/2020-12-31"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://brazil-data-cube.github.io/rstac/reference/request.html">post_request</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://brazil-data-cube.github.io/rstac/reference/items_functions.html">items_fetch</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p>Cloud storage differs from local hard disks and traditional image file formats do not perform well in cloud-based geoprocessing.
+Cloud-optimized GeoTIFF makes reading rectangular subsets of an image or reading images at lower resolution much more efficient.
+As an R user, you do not have to install anything to work with COGs because <a href="https://gdal.org">GDAL</a> (and any package using it) can already work with COGs.
+However, keep in mind that the availability of COGs is a big plus while browsing through catalogs of data providers.</p>
+<p>For larger areas of interest, requested images are still relatively difficult to work with: they may use different map projections, may spatially overlap, and their spatial resolution often depends on the spectral band.
+The <strong>gdalcubes</strong> package <span class="citation">(<a href="references.html#ref-appel_gdalcubes_2019">Appel and Pebesma 2019</a>)</span> can be used to abstract from individual images and to create and process image collections as four-dimensional data cubes.</p>
+<p>The code below shows a minimal example to create a lower resolution (250 m) maximum NDVI composite from the Sentinel-2 images returned by the previous STAC-API search.</p>
+<div class="sourceCode" id="cb393"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/appelmar/gdalcubes">gdalcubes</a></span><span class="op">)</span></span>
+<span><span class="co"># Filter images by cloud cover and create an image collection object</span></span>
+<span><span class="va">cloud_filter</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">x</span><span class="op">[[</span><span class="st">"eo:cloud_cover"</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;</span> <span class="fl">10</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">collection</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/gdalcubes/man/stac_image_collection.html">stac_image_collection</a></span><span class="op">(</span><span class="va">items</span><span class="op">$</span><span class="va">features</span>, </span>
+<span>                                   property_filter <span class="op">=</span> <span class="va">cloud_filter</span><span class="op">)</span></span>
+<span><span class="co"># Define extent, resolution (250m, daily) and CRS of the target data cube</span></span>
+<span><span class="va">v</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/gdalcubes/man/cube_view.html">cube_view</a></span><span class="op">(</span>srs <span class="op">=</span> <span class="st">"EPSG:3857"</span>, extent <span class="op">=</span> <span class="va">collection</span>, dx <span class="op">=</span> <span class="fl">250</span>, dy <span class="op">=</span> <span class="fl">250</span>,</span>
+<span>              dt <span class="op">=</span> <span class="st">"P1D"</span><span class="op">)</span> <span class="co"># "P1D" is an ISO 8601 duration string</span></span>
+<span><span class="co"># Create and process the data cube</span></span>
+<span><span class="va">cube</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/gdalcubes/man/raster_cube.html">raster_cube</a></span><span class="op">(</span><span class="va">collection</span>, <span class="va">v</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/gdalcubes/man/select_bands.html">select_bands</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"B04"</span>, <span class="st">"B08"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/gdalcubes/man/apply_pixel.html">apply_pixel</a></span><span class="op">(</span><span class="st">"(B08-B04)/(B08+B04)"</span>, <span class="st">"NDVI"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/gdalcubes/man/reduce_time.html">reduce_time</a></span><span class="op">(</span><span class="st">"max(NDVI)"</span><span class="op">)</span></span>
+<span><span class="co"># gdalcubes_options(parallel = 8)</span></span>
+<span><span class="co"># plot(cube, zlim = c(0, 1))</span></span></code></pre></div>
+<p>To filter images by cloud cover, we provide a property filter function that is applied on each STAC result item while creating the image collection.
+The function receives available metadata of an image as input list and returns a single logical value such that only images for which the function yields TRUE will be considered.
+In this case, we ignore images with 10% or more cloud cover.
+For more details, please refer to this <a href="https://appelmar.github.io/ogh2021/tutorial.html">tutorial presented at OpenGeoHub summer school 2021</a>.<a class="footnote-ref" tabindex="0" data-toggle="popover" data-content="&lt;p&gt;Another tool for working with STAC data in R is the &lt;strong&gt;rsi&lt;/strong&gt; package that allows to get spatial data from STAC for a given time and location.&lt;/p&gt;"><sup>78</sup></a></p>
+<p>The combination of STAC, COGs, and data cubes forms a cloud-native workflow to analyze (large) collections of satellite imagery in the cloud.
+These tools already form a backbone, for example, of the <strong>sits</strong> package, which allows land use and land cover classification of big Earth observation data in R.
+The package builds EO data cubes from image collections available in cloud services and performs land classification of data cubes using various machine and deep learning algorithms.
+For more information about <strong>sits</strong>, visit <a href="https://e-sensing.github.io/sitsbook/" class="uri">https://e-sensing.github.io/sitsbook/</a> or read the related article <span class="citation">(<a href="references.html#ref-rs13132428">Simoes, Camara, et al. 2021</a>)</span>.</p>
+</div>
+<div id="openeo" class="section level3" number="10.8.2">
+<h3>
+<span class="header-section-number">10.8.2</span> openEO<a class="anchor" aria-label="anchor" href="#openeo"><i class="fas fa-link"></i></a>
+</h3>
+<p>OpenEO <span class="citation">(<a href="references.html#ref-schramm_openeo_2021">Schramm et al. 2021</a>)</span> is an initiative to support interoperability among cloud services by defining a common language for processing the data.
+The initial idea has been described in an <a href="https://r-spatial.org/2016/11/29/openeo.html">r-spatial.org blog post</a> and aims at making it possible for users to change between cloud services easily with as little code changes as possible.
+The <a href="https://processes.openeo.org">standardized processes</a> use a multidimensional data cube model as an interface to the data.
+Implementations are available for eight different backends (see <a href="https://hub.openeo.org" class="uri">https://hub.openeo.org</a>) to which users can connect with R, Python, JavaScript, QGIS, or a web editor and define (and chain) processes on collections.
+Since the functionality and data availability differs among the backends, the <strong>openeo</strong> R package <span class="citation">(<a href="references.html#ref-lahn_openeo_2021">Lahn 2021</a>)</span> dynamically loads available processes and collections from the connected backend.
+Afterwards, users can load image collections, apply and chain processes, submit jobs, and explore and plot results.</p>
+<p>The following code will connect to the <a href="https://openeo.cloud/">openEO platform backend</a>, request available datasets, processes, and output formats, define a process graph to compute a maximum NDVI image from Sentinel-2 data, and finally execute the graph after logging in to the backend.
+The openEO platform backend includes a free tier, and registration is possible from existing institutional or internet platform accounts.</p>
+<div class="sourceCode" id="cb394"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/Open-EO/openeo-r-client">openeo</a></span><span class="op">)</span></span>
+<span><span class="va">con</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/openeo/man/connect.html">connect</a></span><span class="op">(</span>host <span class="op">=</span> <span class="st">"https://openeo.cloud"</span><span class="op">)</span></span>
+<span><span class="va">p</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/openeo/man/processes.html">processes</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># load available processes</span></span>
+<span><span class="va">collections</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/openeo/man/list_collections.html">list_collections</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># load available collections</span></span>
+<span><span class="va">formats</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/openeo/man/list_file_formats.html">list_file_formats</a></span><span class="op">(</span><span class="op">)</span> <span class="co"># load available output formats</span></span>
+<span><span class="co"># Load Sentinel-2 collection</span></span>
+<span><span class="va">s2</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">load_collection</span><span class="op">(</span>id <span class="op">=</span> <span class="st">"SENTINEL2_L2A"</span>,</span>
+<span>                       spatial_extent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>west <span class="op">=</span> <span class="fl">7.5</span>, east <span class="op">=</span> <span class="fl">8.5</span>,</span>
+<span>                                             north <span class="op">=</span> <span class="fl">51.1</span>, south <span class="op">=</span> <span class="fl">50.1</span><span class="op">)</span>,</span>
+<span>                       temporal_extent <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"2021-01-01"</span>, <span class="st">"2021-01-31"</span><span class="op">)</span>,</span>
+<span>                       bands <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"B04"</span>, <span class="st">"B08"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Compute NDVI vegetation index</span></span>
+<span><span class="va">compute_ndvi</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">reduce_dimension</span><span class="op">(</span>data <span class="op">=</span> <span class="va">s2</span>, dimension <span class="op">=</span> <span class="st">"bands"</span>,</span>
+<span>                                  reducer <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">context</span><span class="op">)</span> <span class="op">{</span></span>
+<span>                                      <span class="op">(</span><span class="va">data</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">-</span> <span class="va">data</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="va">data</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">+</span> <span class="va">data</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span>                                  <span class="op">}</span><span class="op">)</span></span>
+<span><span class="co"># Compute maximum over time</span></span>
+<span><span class="va">reduce_max</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">reduce_dimension</span><span class="op">(</span>data <span class="op">=</span> <span class="va">compute_ndvi</span>, dimension <span class="op">=</span> <span class="st">"t"</span>,</span>
+<span>                                reducer <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="op">{</span></span>
+<span>                                    <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span>                                <span class="op">}</span><span class="op">)</span></span>
+<span><span class="co"># Export as GeoTIFF</span></span>
+<span><span class="va">result</span> <span class="op">=</span> <span class="va">p</span><span class="op">$</span><span class="fu">save_result</span><span class="op">(</span><span class="va">reduce_max</span>, <span class="va">formats</span><span class="op">$</span><span class="va">output</span><span class="op">$</span><span class="va">GTiff</span><span class="op">)</span></span>
+<span><span class="co"># Login, see https://docs.openeo.cloud/getting-started/r/#authentication</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/openeo/man/login.html">login</a></span><span class="op">(</span>login_type <span class="op">=</span> <span class="st">"oidc"</span>, provider <span class="op">=</span> <span class="st">"egi"</span>, </span>
+<span>      config <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>client_id <span class="op">=</span> <span class="st">"..."</span>, secret <span class="op">=</span> <span class="st">"..."</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Execute processes</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/openeo/man/compute_result.html">compute_result</a></span><span class="op">(</span>graph <span class="op">=</span> <span class="va">result</span>, output_file <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".tif"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+</div>
+<div id="exercises-8" class="section level2" number="10.9">
+<h2>
+<span class="header-section-number">10.9</span> Exercises<a class="anchor" aria-label="anchor" href="#exercises-8"><i class="fas fa-link"></i></a>
+</h2>
+<!-- qgisprocess 1-3 -->
+<p>E1. Compute global solar irradiation for an area of <code>system.file("raster/dem.tif", package = "spDataLarge")</code> for March 21 at 11:00 am using the <code>r.sun</code> GRASS GIS through <strong>qgisprocess</strong>.</p>
+<!-- sagagis 1 -->
+<p>E2. Compute catchment area and catchment slope of <code>system.file("raster/dem.tif", package = "spDataLarge")</code> using <strong>Rsagacmd</strong>.</p>
+<p>E3. Continue working on the <code>ndvi_segments</code> object created in the SAGA section.
+Extract average NDVI values from the <code>ndvi</code> raster and group them into six clusters using <code><a href="https://rdrr.io/r/stats/kmeans.html">kmeans()</a></code>.
+Visualize the results.</p>
+<!-- rgrass 1 -->
+<p>E4. Attach <code>data(random_points, package = "spDataLarge")</code> and read <code>system.file("raster/dem.tif", package = "spDataLarge")</code> into R.
+Select a point randomly from <code>random_points</code> and find all <code>dem</code> pixels that can be seen from this point (hint: viewshed can be calculated using GRASS GIS).
+Visualize your result.
+For example, plot a hillshade, the digital elevation model, your viewshed output, and the point.
+Additionally, give <code>mapview</code> a try.</p>
+<!-- gdal 1-2 -->
+<p>E5. Use <code>gdalinfo</code> via a system call for a raster file stored on a disk of your choice.
+What kind of information can you find there?</p>
+<p>E6. Use <code>gdalwarp</code> to decrease the resolution of your raster file (for example, if the resolution is 0.5, change it into 1). Note: <code>-tr</code> and <code>-r</code> flags will be used in this exercise.</p>
+<!-- postgis 1? -->
+<p>E7. Query all Californian highways from the PostgreSQL/PostGIS database living in the QGIS Cloud introduced in this chapter.</p>
+<!-- stac+gdalcubes 1 -->
+<p>E8. The <code>ndvi.tif</code> raster (<code>system.file("raster/ndvi.tif", package = "spDataLarge")</code>) contains NDVI calculated for the Mongón study area based on Landsat data from September 22, 2000.
+Use <strong>rstac</strong>, <strong>gdalcubes</strong>, and <strong>terra</strong> to download Sentinel-2 images for the same area from
+2020-08-01 to 2020-10-31, calculate its NDVI, and then compare it with the results from <code>ndvi.tif</code>.</p>
+
+</div>
+</div>
+
+  <div class="chapter-nav">
+<div class="prev"><a href="adv-map.html"><span class="header-section-number">9</span> Making maps with R</a></div>
+<div class="next"><a href="algorithms.html"><span class="header-section-number">11</span> Scripts, algorithms and functions</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <h2>Second Edition</h2>
+    <!--<p>Now is a great time to provide feedback</p>-->
+        <ul class="list-unstyled">
+<!--<li><a href="https://forms.gle/nq9RmbxJyZXQgc948">Provide feedback (5 min)</a></li>--><li><a href="https://geocompx.org/">Visit the geocompx website 🌐</a></li>
+          <li><a href="https://r.geocompx.org/#reproducibility">Install updated packages 💾</a></li>
+          <li><a href="https://github.com/geocompx/geocompr/issues">Open an issue <i class="fas fa-question"></i></a></li>
+          <li><a href="https://discord.gg/PMztXYgNxp">Chat on Discord <i class="fab fa-discord"></i></a></li>
+          <li><a href="https://r.geocompx.org/solutions/">Check exercise solutions <i class="fa fa-check"></i></a></li>
+          <li><a href="https://supportukrainenow.org/">Support Ukraine 🇺🇦</a></li>
+          <li><a href="https://donate.stripe.com/4gweWl94Q9E35AQ6oo">Support this project 💸</a></li>
+        </ul>
+<hr>
+<nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#gis"><span class="header-section-number">10</span> Bridges to GIS software</a></li>
+<li><a class="nav-link" href="#prerequisites-8">Prerequisites</a></li>
+<li><a class="nav-link" href="#introduction-6"><span class="header-section-number">10.1</span> Introduction</a></li>
+<li>
+<a class="nav-link" href="#rqgis"><span class="header-section-number">10.2</span> qgisprocess: a bridge to QGIS and beyond</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#qgis-vector"><span class="header-section-number">10.2.1</span> Vector data</a></li>
+<li><a class="nav-link" href="#qgis-raster"><span class="header-section-number">10.2.2</span> Raster data</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#saga"><span class="header-section-number">10.3</span> SAGA</a></li>
+<li><a class="nav-link" href="#grass"><span class="header-section-number">10.4</span> GRASS GIS</a></li>
+<li><a class="nav-link" href="#when-to-use-what"><span class="header-section-number">10.5</span> When to use what?</a></li>
+<li><a class="nav-link" href="#gdal"><span class="header-section-number">10.6</span> Bridges to GDAL</a></li>
+<li><a class="nav-link" href="#postgis"><span class="header-section-number">10.7</span> Bridges to spatial databases</a></li>
+<li>
+<a class="nav-link" href="#cloud"><span class="header-section-number">10.8</span> Bridges to cloud technologies and services</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#staccog"><span class="header-section-number">10.8.1</span> STAC, COGs, and data cubes in the cloud</a></li>
+<li><a class="nav-link" href="#openeo"><span class="header-section-number">10.8.2</span> openEO</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#exercises-8"><span class="header-section-number">10.9</span> Exercises</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+<li><a id="book-source" href="https://github.com/geocompx/geocompr/blob/main/10-gis.Rmd">View source <i class="fab fa-github"></i></a></li>
+          <li><a id="book-edit" href="https://github.com/geocompx/geocompr/edit/main/10-gis.Rmd">Edit this page <i class="fab fa-github"></i></a></li>
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>Geocomputation with R</strong>" was written by Robin Lovelace, Jakub Nowosad, Jannes Muenchow. It was last built on 2025-01-16.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script><script type="text/x-mathjax-config">const popovers = document.querySelectorAll('a.footnote-ref[data-toggle="popover"]');
+for (let popover of popovers) {
+  const div = document.createElement('div');
+  div.setAttribute('style', 'position: absolute; top: 0, left:0; width:0, height:0, overflow: hidden; visibility: hidden;');
+  div.innerHTML = popover.getAttribute('data-content');
+
+  var has_math = div.querySelector("span.math");
+  if (has_math) {
+    document.body.appendChild(div);
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, div]);
+    MathJax.Hub.Queue(function() {
+      popover.setAttribute('data-content', div.innerHTML);
+      document.body.removeChild(div);
+    })
+  }
+}
+</script>
+</body>
+</html>
