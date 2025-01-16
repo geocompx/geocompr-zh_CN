@@ -1,0 +1,8 @@
+{
+  "image": "pixi-r",
+  "customizations": {
+    "vscode": {
+      "extensions": ["reditorsupport.r"]
+    }
+  }
+}
