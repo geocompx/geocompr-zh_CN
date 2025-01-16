@@ -1,7 +1,0 @@
-package,published,title,depends_count,suggests_count,tidyverse_happy,has_vignette_build,has_tests,reverse_count,dl_last_month,ci,test_coverage,stars,forks,last_commit,last_issue_closed,contributors
-cartogram,2020-08-26,Create Cartograms with R,NA,4,FALSE,FALSE,FALSE,1,3109,NONE,NONE,134,13,42.1,17.6,4
-geogrid,2018-12-11,Turn Geospatial Polygons into Regular or Hexagonal Grids,NA,3,FALSE,FALSE,TRUE,1,1955,Travis,CodeCov,378,32,54.2,53.86666666666667,6
-geofacet,2020-05-26,'ggplot2' Faceting Utilities for Geographical Data,1,5,TRUE,TRUE,TRUE,1,1042,Travis,CodeCov,318,40,36.36666666666667,14.433333333333334,2
-linemap,2021-01-19,Line Maps,1,2,FALSE,FALSE,TRUE,0,228,NONE,CodeCov,110,6,28.433333333333334,13.533333333333333,0
-tanaka,2022-07-04,Design Shaded Contour Lines (or Tanaka) Maps,NA,3,FALSE,FALSE,TRUE,1,438,NONE,CodeCov,71,3,10.733333333333333,2.7333333333333334,0
-rayshader,2021-04-28,Create Maps and Visualize Data in 2D and 3D,1,9,TRUE,FALSE,FALSE,2,2982,NONE,NA,1.9k,204,0.16666666666666666,0.16666666666666666,8
