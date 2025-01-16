@@ -1,0 +1,11 @@
+library(sf)
+library(spData)
+world_proj = st_transform(world, "+proj=eck4")
+world_cents = st_centroid(world_proj, of_largest_polygon = TRUE)
+par(mar = c(0, 0, 0, 0))
+plot(world_proj["continent"], reset = FALSE, main = "", key.pos = NULL)
+g = st_graticule()
+g = st_transform(g, crs = "+proj=eck4")
+plot(g$geometry, add = TRUE, col = "lightgray")
+cex = sqrt(world$pop) / 10000
+plot(st_geometry(world_cents), add = TRUE, cex = cex, lwd = 2, graticule = TRUE)
